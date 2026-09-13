@@ -11,6 +11,23 @@
   const envelope = $('openEnvelope');
   const site = $('site');
   const musicToggle = $('musicToggle');
+  const themeToggle = $('themeToggle');
+
+  function applyTheme(isDark) {
+    document.body.classList.toggle('dark-theme', isDark);
+    themeToggle.textContent = isDark ? '☀' : '☾';
+    themeToggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+    themeToggle.setAttribute('aria-pressed', String(isDark));
+  }
+
+  const savedTheme = localStorage.getItem('weddingTheme') === 'dark';
+  applyTheme(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = !document.body.classList.contains('dark-theme');
+    applyTheme(isDark);
+    localStorage.setItem('weddingTheme', isDark ? 'dark' : 'light');
+  });
 
   /* ---------- ENVELOPE ---------- */
 envelope.addEventListener('click', () => { 
