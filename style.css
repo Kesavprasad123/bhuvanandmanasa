@@ -127,11 +127,14 @@
 
 .photo-collage .item-1 img,
 .photo-collage .item-2 img,
-.photo-collage .item-3 img,
 .photo-collage .item-5 img,
 .photo-collage .item-6 img,
 .photo-collage .item-7 img {
   transform: translate(-50%, -50%) rotate(-90deg) scale(1.35);
+}
+
+.photo-collage .item-3 img {
+  transform: translate(-50%, -42%) rotate(-90deg) scale(1.1);
 }
 
 .photo-collage .collage-item:hover img {
@@ -140,11 +143,14 @@
 
 .photo-collage .item-1:hover img,
 .photo-collage .item-2:hover img,
-.photo-collage .item-3:hover img,
 .photo-collage .item-5:hover img,
 .photo-collage .item-6:hover img,
 .photo-collage .item-7:hover img {
   transform: translate(-50%, -50%) rotate(-90deg) scale(1.4);
+}
+
+.photo-collage .item-3:hover img {
+  transform: translate(-50%, -42%) rotate(-90deg) scale(1.15);
 }
 
 .photo-collage .collage-item::after {
