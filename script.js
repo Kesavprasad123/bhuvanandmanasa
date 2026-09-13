@@ -260,6 +260,8 @@ function createEnvelopeBlast() {
 
       musicPlaying = true;
       musicToggle.textContent = "🔊";
+      musicToggle.setAttribute("aria-label", "Pause wedding music");
+      musicToggle.setAttribute("aria-pressed", "true");
       musicToggle.classList.add("playing");
 
       /* Next visit will use the next song */
@@ -267,7 +269,11 @@ function createEnvelopeBlast() {
       localStorage.setItem("weddingSongIndex", songIndex);
 
     } catch (error) {
-      console.log("Music could not start:", error);
+      musicPlaying = false;
+      musicToggle.textContent = "♪";
+      musicToggle.setAttribute("aria-label", "Play wedding music");
+      musicToggle.setAttribute("aria-pressed", "false");
+      console.warn("Wedding music is unavailable:", error.message);
     }
   }
 
@@ -278,6 +284,8 @@ function createEnvelopeBlast() {
     musicPlaying = false;
     musicToggle.textContent = "♪";
     musicToggle.classList.remove("playing");
+    musicToggle.setAttribute("aria-label", "Play wedding music");
+    musicToggle.setAttribute("aria-pressed", "false");
   }
 
   /* Music button */
@@ -331,7 +339,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   ];
 
   // Fewer flowers on mobile
-  const count = window.innerWidth <= 600 ? 18 : 30;
+  const count = window.innerWidth <= 600 ? 8 : 14;
 
   for (let i = 0; i < count; i++) {
 
@@ -343,7 +351,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     const drift = (Math.random() * 120 - 60).toFixed(0);
     const rotation = Math.floor(Math.random() * 500 + 180);
     const opacity = (Math.random() * 0.25 + 0.25).toFixed(2);
-    const blur = Math.random() < 0.25 ? "0.5px" : "0px";
+    const blur = "0px";
 
     flower.textContent =
       flowers[Math.floor(Math.random() * flowers.length)];
