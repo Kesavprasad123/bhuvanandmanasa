@@ -36,9 +36,33 @@ The website is designed to provide a smooth experience across:
 
 ॥ Shree Ganeshaya Namah ॥
 
-## 🌐 Live Website
+## 🌐 Custom domain deployment
 
-Coming soon...
+The repository contains a valid `CNAME` file for `bhuvanmanasa.in`.
+
+### GitHub Pages
+
+1. Push the latest files to the branch selected under **Settings → Pages**. For this repository, use the `main` branch and the `/ (root)` folder unless you have deliberately selected another source.
+2. In **Settings → Pages → Custom domain**, enter `bhuvanmanasa.in` and save. GitHub should recreate the `CNAME` file if needed.
+3. Enable **Enforce HTTPS** after the certificate becomes available.
+
+### GoDaddy DNS
+
+At GoDaddy, remove conflicting `A` records for `@`, then add these four GitHub Pages records:
+
+```text
+@  A  185.199.108.153
+@  A  185.199.109.153
+@  A  185.199.110.153
+@  A  185.199.111.153
+```
+
+Add one `CNAME` record for `www` pointing to `kesavprasad123.github.io`. Do not point `www` to the repository URL or to the apex domain. DNS changes can take up to 24-48 hours to propagate.
+
+The expected addresses are:
+
+* `https://bhuvanmanasa.in`
+* `https://www.bhuvanmanasa.in`
 
 ## 📄 License
 

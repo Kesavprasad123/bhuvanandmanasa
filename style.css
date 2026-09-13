@@ -4,7 +4,7 @@
     --shadow:0 20px 60px rgba(65,38,29,.15)
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:auto}
   body{margin:0;color:var(--ink);font-family:"Cormorant Garamond",serif;background:var(--cream);overflow-x:hidden}
   body.locked{overflow:hidden}
   img{display:block;max-width:100%}
@@ -21,7 +21,7 @@
   .telugu{font-family:"Noto Serif Telugu",serif;color:var(--rose-dark)}
 
   /* ---------- ENVELOPE ---------- */
-  .opening{min-height:100svh;width:100%;display:grid;place-items:center;position:relative;overflow:hidden;text-align:center;background:radial-gradient(circle at 50% 20%,#fffdf9 0,#fbf2e9 42%,#eadfd0 100%); background:url("assets/");  background-position:center center; background-repeat:no-repeat;background-size:100% 100%;}
+  .opening{min-height:100svh;width:100%;display:grid;place-items:center;position:relative;overflow:hidden;text-align:center;background:linear-gradient(rgba(255,250,244,.78),rgba(255,250,244,.78)),url("assets/Envelope1.png") center/cover no-repeat;}
   .opening:before,.opening:after{content:"";position:absolute;border-radius:50%;filter:blur(70px);opacity:.35;pointer-events:none}
   .opening:before{width:420px;height:420px;background:#e9b4bd;left:-190px;bottom:-170px}.opening:after{width:430px;height:430px;background:#c9d4b8;right:-190px;top:-180px}
   .opening-content{width:min(520px,94vw);position:relative;z-index:3;padding:28px 12px 35px}
@@ -82,17 +82,7 @@
    ========================================================= */
 
 html {
-  scroll-behavior: smooth;
-}
-
-/* Smooth anchor scrolling */
-html {
   scroll-padding-top: 20px;
-}
-
-/* Make scrolling feel softer */
-body {
-  scroll-behavior: smooth;
 }
 
 
@@ -109,6 +99,7 @@ body {
   pointer-events: none;
   z-index: 5;
   contain: strict;
+  backface-visibility: hidden;
 }
 
 .falling-flowers span {
@@ -122,7 +113,7 @@ body {
   color: var(--color);
   opacity: 0;
 
-  filter: blur(var(--blur));
+  filter: none;
 
   pointer-events: none;
   user-select: none;
