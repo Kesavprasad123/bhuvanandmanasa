@@ -82,6 +82,7 @@ function showLightboxPhoto(index) {
   const image = photo.querySelector('img');
   lightboxImage.src = photo.dataset.photo;
   lightboxImage.alt = image.alt;
+  lightboxImage.classList.toggle('is-rotated', photo.dataset.rotation === '-90');
   lightboxCaption.textContent = photo.dataset.caption;
 }
 
