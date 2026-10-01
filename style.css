@@ -739,6 +739,11 @@ html {
   transform:rotateY(180deg);
 }
 
+.event-card--flip:not(.is-flipped) .event-card-back,
+.event-card--flip.is-flipped .event-card-front{
+  pointer-events:none;
+}
+
 .event-card--flip .event-card-face{
   position:absolute;
   inset:0;
