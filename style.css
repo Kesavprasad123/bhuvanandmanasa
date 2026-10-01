@@ -688,84 +688,12 @@ html {
    ADD THE NEW PHOTO FIT CODE HERE — AT THE VERY END
    ================================================== */
 
-/* Sideways photos */
-
-.photo-collage .item-1 img{
-  transform:rotate(-90deg) scale(.78) !important;
-  object-position:center center;
-}
-
-.photo-collage .item-2 img{
-  transform:rotate(-90deg) scale(.78) !important;
-  object-position:center center;
-}
-
-.photo-collage .item-3 img{
-   width: 100%;
-   height: 100%;
-   object-fit: cover;
-  transform:rotate(-90deg) scale(.78) !important;
-  transform: scale(0.90);
-   object-position: center 25%;
-}
-
-.photo-collage .item-5 img{
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  transform:rotate(-90deg) scale(.78) !important;
-  transform: scale(0.90);
-  object-position: center 25%;
-}
-
-.photo-collage .item-6 img{
-  transform:rotate(-90deg) scale(.78) !important;
-  object-position:center center;
-}
-
-.photo-collage .item-7 img{
-  transform:rotate(-90deg) scale(.78) !important;
-  object-position:center center;
-}
-
-
-/* Correctly oriented photos */
-
-.photo-collage .item-4 img,
-.photo-collage .item-8 img{
+.photo-collage .collage-item img,
+.photo-collage .collage-item:hover img{
+  width:100%;
+  height:100%;
+  max-width:none;
+  object-fit:cover !important;
+  object-position:center !important;
   transform:none !important;
-  object-position:center center;
-}
-
-
-/* ---------- HOVER ---------- */
-
-.photo-collage .item-1:hover img,
-.photo-collage .item-2:hover img,
-.photo-collage .item-3:hover img,
-.photo-collage .item-5:hover img,
-.photo-collage .item-6:hover img,
-.photo-collage .item-7:hover img{
-  transform:rotate(-90deg) scale(1) !important;
-}
-
-/* Keep positioning on hover */
-.photo-collage .item-3:hover img {
-  transform: scale(0.94);
-}
-
-.photo-collage .item-5:hover img {
-  transform: scale(0.94);
-}
-
-/* ---------- CORRECTLY ORIENTED ---------- */
-
-.photo-collage .item-4 img,
-.photo-collage .item-8 img{
-  transform:none !important;
-}
-
-.photo-collage .item-4:hover img,
-.photo-collage .item-8:hover img{
-  transform:scale(1.06) !important;
 }
