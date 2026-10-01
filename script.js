@@ -33,6 +33,7 @@
     const frontToggle = card.querySelector('.event-card-front-toggle');
     const back = card.querySelector('.event-card-back');
     const backToggle = card.querySelector('.event-card-back-toggle');
+    const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
     function setFlipped(isFlipped) {
       card.classList.toggle('is-flipped', isFlipped);
@@ -47,9 +48,32 @@
       backToggle.focus();
     });
 
-    backToggle.addEventListener('click', () => {
+    back.addEventListener('click', (event) => {
+      if (event.target.closest('.event-map-button')) return;
       setFlipped(false);
       frontToggle.focus();
+    });
+
+    card.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !card.classList.contains('is-flipped')) return;
+      setFlipped(false);
+      frontToggle.focus();
+    });
+
+    if (supportsHover) {
+      card.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' && !card.contains(document.activeElement)) {
+          setFlipped(true);
+        }
+      });
+
+      card.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse') setFlipped(false);
+      });
+    }
+
+    document.addEventListener('pointerdown', (event) => {
+      if (!card.contains(event.target)) setFlipped(false);
     });
   });
 
