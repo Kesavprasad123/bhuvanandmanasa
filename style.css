@@ -724,6 +724,7 @@ html {
 
 .event-card--flip{
   overflow:visible;
+  -webkit-perspective:1200px;
   perspective:1200px;
   background-image:none;
 }
@@ -731,11 +732,14 @@ html {
 .event-card--flip .event-card-inner{
   position:relative;
   min-height:590px;
+  -webkit-transform-style:preserve-3d;
   transform-style:preserve-3d;
+  -webkit-transition:-webkit-transform .75s cubic-bezier(.2,.75,.25,1);
   transition:transform .75s cubic-bezier(.2,.75,.25,1);
 }
 
 .event-card--flip.is-flipped .event-card-inner{
+  -webkit-transform:rotateY(180deg);
   transform:rotateY(180deg);
 }
 
@@ -749,11 +753,19 @@ html {
   inset:0;
   overflow:hidden;
   border-radius:inherit;
+  -webkit-transform-style:preserve-3d;
+  transform-style:preserve-3d;
+  -webkit-backface-visibility:hidden;
   backface-visibility:hidden;
   background-image:var(--event-image);
   background-size:cover;
   background-position:center;
   color:white;
+}
+
+.event-card--flip .event-card-front{
+  -webkit-transform:rotateY(0deg);
+  transform:rotateY(0deg);
 }
 
 .event-card--flip .event-card-front-toggle{
@@ -785,6 +797,7 @@ html {
   padding:34px;
   background-image:linear-gradient(rgba(39,19,19,.72),rgba(39,19,19,.9)),var(--event-image);
   text-align:center;
+  -webkit-transform:rotateY(180deg);
   transform:rotateY(180deg);
 }
 
