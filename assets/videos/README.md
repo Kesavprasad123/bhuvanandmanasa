@@ -1,0 +1,1 @@
+Place wedding video files in this folder. To show a video in the Gallery, add its relative URL and title to the `galleryVideos` list in `pages.js`.
