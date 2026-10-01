@@ -697,3 +697,27 @@ html {
   object-position:center !important;
   transform:none !important;
 }
+
+.photo-collage .collage-item{
+  container-type:size;
+}
+
+.photo-collage .item-1 img,
+.photo-collage .item-2 img,
+.photo-collage .item-3 img,
+.photo-collage .item-5 img,
+.photo-collage .item-6 img,
+.photo-collage .item-7 img,
+.photo-collage .item-1:hover img,
+.photo-collage .item-2:hover img,
+.photo-collage .item-3:hover img,
+.photo-collage .item-5:hover img,
+.photo-collage .item-6:hover img,
+.photo-collage .item-7:hover img{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:100cqh;
+  height:100cqw;
+  transform:translate(-50%,-50%) rotate(-90deg) !important;
+}
