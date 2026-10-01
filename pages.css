@@ -1,3 +1,5 @@
+html{scrollbar-gutter:stable}
+
 .standalone-page{
   min-height:100vh;
   padding-top:0;
@@ -26,7 +28,10 @@
 
 .gallery-hero{width:100%;background:#fbf3e9}
 .gallery-hero img{display:block;width:100%;height:auto}
-.live-hero{background-image:url("/assets/Wedding-1.png");background-position:center 48%}
+.live-hero{min-height:0;display:block;padding:0;background:#fbf3e9}
+.live-hero::before{z-index:1;background:linear-gradient(180deg,rgba(31,19,21,.04),rgba(31,19,21,.55))}
+.live-hero img{position:relative;z-index:0;display:block;width:100%;height:auto}
+.live-hero .album-hero-copy{position:absolute;z-index:2;left:max(24px,calc((100vw - 1180px)/2));right:max(24px,calc((100vw - 1180px)/2));bottom:clamp(14px,4vw,42px);width:auto;margin:0}
 .album-hero-copy{width:min(1180px,100%);margin:0 auto}
 .album-hero .eyebrow{color:#f2dcb6}
 .album-hero h1{
@@ -219,6 +224,7 @@ body.dark-theme .youtube-watch-link{color:var(--gold-light);border-color:var(--g
 
 @media(max-width:760px){
   .album-hero{min-height:330px;padding:130px 22px 32px}
+  .live-hero{min-height:0;padding:0}
   .album-hero h1{font-size:54px}
   .album-hero-copy>p:last-child{font-size:18px}
   .album-main,.live-main{width:92%}
