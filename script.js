@@ -29,6 +29,30 @@
     localStorage.setItem('weddingTheme', isDark ? 'dark' : 'light');
   });
 
+  document.querySelectorAll('.event-card--flip').forEach((card) => {
+    const frontToggle = card.querySelector('.event-card-front-toggle');
+    const back = card.querySelector('.event-card-back');
+    const backToggle = card.querySelector('.event-card-back-toggle');
+
+    function setFlipped(isFlipped) {
+      card.classList.toggle('is-flipped', isFlipped);
+      frontToggle.setAttribute('aria-expanded', String(isFlipped));
+      frontToggle.inert = isFlipped;
+      back.inert = !isFlipped;
+      back.setAttribute('aria-hidden', String(!isFlipped));
+    }
+
+    frontToggle.addEventListener('click', () => {
+      setFlipped(true);
+      backToggle.focus();
+    });
+
+    backToggle.addEventListener('click', () => {
+      setFlipped(false);
+      frontToggle.focus();
+    });
+  });
+
   /* ---------- ENVELOPE ---------- */
 envelope.addEventListener('click', () => { 
   if (envelope.classList.contains('open')) return; 

@@ -721,3 +721,105 @@ html {
   height:100cqw;
   transform:translate(-50%,-50%) rotate(-90deg) !important;
 }
+
+.event-card--flip{
+  overflow:visible;
+  perspective:1200px;
+  background-image:none;
+}
+
+.event-card--flip .event-card-inner{
+  position:relative;
+  min-height:590px;
+  transform-style:preserve-3d;
+  transition:transform .75s cubic-bezier(.2,.75,.25,1);
+}
+
+.event-card--flip.is-flipped .event-card-inner{
+  transform:rotateY(180deg);
+}
+
+.event-card--flip .event-card-face{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  border-radius:inherit;
+  backface-visibility:hidden;
+  background-image:var(--event-image);
+  background-size:cover;
+  background-position:center;
+  color:white;
+}
+
+.event-card--flip .event-card-front-toggle{
+  position:absolute;
+  z-index:3;
+  inset:0;
+  width:100%;
+  height:100%;
+  padding:0;
+  border:0;
+  border-radius:inherit;
+  background:transparent;
+  cursor:pointer;
+}
+
+.event-card--flip .event-card-front-toggle:focus-visible,
+.event-card--flip .event-card-back-toggle:focus-visible,
+.event-card--flip .event-map-button:focus-visible{
+  outline:3px solid #f3d59d;
+  outline-offset:-7px;
+}
+
+.event-card--flip .event-card-back{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding:34px;
+  background-image:linear-gradient(rgba(39,19,19,.72),rgba(39,19,19,.9)),var(--event-image);
+  text-align:center;
+  transform:rotateY(180deg);
+}
+
+.event-card--flip .event-card-back h3{
+  margin:0;
+  font-family:"Great Vibes",cursive;
+  font-size:54px;
+  font-weight:400;
+  line-height:1.05;
+}
+
+.event-card--flip .event-card-back address{
+  max-width:30ch;
+  font-size:20px;
+  font-style:normal;
+  line-height:1.4;
+}
+
+.event-card--flip .event-map-button{
+  display:inline-block;
+  padding:12px 20px;
+  border:1px solid rgba(255,255,255,.7);
+  border-radius:24px;
+  background:#bd8a42;
+  color:#fff;
+  font-family:"Playfair Display",serif;
+  text-decoration:none;
+}
+
+.event-card--flip .event-card-back-toggle{
+  padding:8px 12px;
+  border:0;
+  background:transparent;
+  color:#fff;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .event-card--flip .event-card-inner{
+    transition:none;
+  }
+}
