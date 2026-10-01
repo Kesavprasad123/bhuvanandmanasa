@@ -32,7 +32,7 @@
   document.querySelectorAll('.event-card--flip').forEach((card) => {
     const frontToggle = card.querySelector('.event-card-front-toggle');
     const back = card.querySelector('.event-card-back');
-    const backToggle = card.querySelector('.event-card-back-toggle');
+    const mapLink = back.querySelector('.event-map-button');
     const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
     function setFlipped(isFlipped) {
@@ -45,7 +45,7 @@
 
     frontToggle.addEventListener('click', () => {
       setFlipped(true);
-      backToggle.focus();
+      mapLink.focus();
     });
 
     back.addEventListener('click', (event) => {
