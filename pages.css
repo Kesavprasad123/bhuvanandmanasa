@@ -24,7 +24,8 @@
   background:linear-gradient(180deg,rgba(31,19,21,.12),rgba(31,19,21,.76));
 }
 
-.gallery-hero{background-image:url("/assets/Gallery-pics.png")}
+.gallery-hero{width:100%;background:#fbf3e9}
+.gallery-hero img{display:block;width:100%;height:auto}
 .live-hero{background-image:url("/assets/Wedding-1.png");background-position:center 48%}
 .album-hero-copy{width:min(1180px,100%);margin:0 auto}
 .album-hero .eyebrow{color:#f2dcb6}
