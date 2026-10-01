@@ -255,12 +255,9 @@ function createEnvelopeBlast() {
   const weddingMusic = document.getElementById("weddingMusic");
 
   const weddingSongs = [
-    "assets/Raarandoi-veduka-choodham.mp3",
-    "assets/Alanati Ramachandrudu.mp3",
+    "assets/Raarandoi-veduka-choodham-fixed.mp3",
     "assets/kalyanam-vybhogam.mp3",
     "assets/marriage.mp3",
-    "assets/shararat.mp3",
-    "assets/Shatamanam Bhavati.mp3",
     "assets/jaya-mangalam.mp3"
   ];
 
