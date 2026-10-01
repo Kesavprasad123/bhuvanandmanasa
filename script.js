@@ -257,8 +257,7 @@ function createEnvelopeBlast() {
   const weddingSongs = [
     "assets/Raarandoi-veduka-choodham-fixed.mp3",
     "assets/kalyanam-vybhogam.mp3",
-    "assets/marriage.mp3",
-    "assets/jaya-mangalam.mp3"
+    "assets/marriage.mp3"
   ];
 
   let musicPlaying = false;
