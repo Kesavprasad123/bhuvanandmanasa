@@ -108,6 +108,7 @@ html{scrollbar-gutter:stable}
   height:100cqw;
   transform:translate(-50%,-50%) rotate(-90deg);
 }
+.album-photo[data-crop="right"] img{object-position:right center}
 .album-photo[data-rotation="-90"]:hover img,
 .album-photo[data-rotation="-90"]:focus-visible img{
   transform:translate(-50%,-50%) rotate(-90deg) scale(1.035);
