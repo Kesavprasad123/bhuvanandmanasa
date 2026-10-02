@@ -861,7 +861,7 @@ html {
 .scratch-wrap{width:min(400px,92%);margin:8px auto 0;animation:scIn .8s ease both}
 .scratch-instruction{font-family:"Great Vibes",cursive;font-size:clamp(26px,6.5vw,34px);color:var(--rose-dark);margin:0 0 14px}
 .scratch-hint{font-size:15px;font-style:italic;color:#8c7a67;margin:14px 0 0}
-.scratch-card{position:relative;width:100%;aspect-ratio:4/2.6;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);border:1px solid #e8d3ae;background:var(--paper)}
+.scratch-card{position:relative;width:100%;aspect-ratio:8/5;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);border:1px solid #e8d3ae;background:var(--paper)}
 .scratch-hidden{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:linear-gradient(145deg,#fffdf8,#fdf3e4);padding:16px}
 .sc-floral{color:var(--gold);font-size:14px;letter-spacing:6px;opacity:.8}
 .sc-names{font-family:"Great Vibes",cursive;font-weight:400;font-size:clamp(30px,8vw,42px);color:var(--rose-dark);margin:0}
