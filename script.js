@@ -3,7 +3,7 @@
     No external JS libraries are required.
     ========================================================= */
 
-  const WEDDING_DATE = new Date('2026-12-12T20:24:00+05:30').getTime();
+  const WEDDING_DATE = new Date('2026-12-12T20:23:00+05:30').getTime();
   const MAPS_URL = 'https://www.google.com/maps/place/SVPC+CONVENTIONS/@17.0438279,81.794505,12.69z/data=!4m6!3m5!1s0x3a37a173580ba0c1:0xf660ea509c425358!8m2!3d17.0387557!4d81.8332866!16s%2Fg%2F11nz344pws?entry=ttu&g_ep=EgoyMDI2MDkwMS4wIKXMDSoASAFQAw%3D%3D';
 
   const $ = (id) => document.getElementById(id);
@@ -94,6 +94,7 @@ envelope.addEventListener('click', () => {
       document.body.classList.remove('locked');
       window.scrollTo(0, 0);
       initReveal();
+      initScratchCard();
     }, 1550);
 
     setTimeout(() => {
@@ -478,3 +479,99 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     document.documentElement.style.scrollBehavior = 'auto';
   }
 
+
+/* =========================================================
+   SCRATCH CARD (replaces countdown until scratched)
+   ========================================================= */
+function initScratchCard() {
+  const card = document.getElementById('scratchCard');
+  const canvas = document.getElementById('scratchCanvas');
+  const wrap = document.getElementById('scratchWrap');
+  const done = document.getElementById('scratchDone');
+  if (!card || !canvas || !wrap || !done || card.dataset.init) return;
+  card.dataset.init = '1';
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+  let scratching = false, completed = false, checks = 0, last = null;
+
+  function sizeCanvas() {
+    const rect = card.getBoundingClientRect();
+    canvas.width = Math.max(1, Math.floor(rect.width));
+    canvas.height = Math.max(1, Math.floor(rect.height));
+    paintCoating();
+  }
+
+  function paintCoating() {
+    const w = canvas.width, h = canvas.height;
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#e9cd93');
+    grad.addColorStop(.35, '#c99b4a');
+    grad.addColorStop(.55, '#a8772f');
+    grad.addColorStop(.75, '#e3c584');
+    grad.addColorStop(1, '#bd8a42');
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+    const shine = ctx.createLinearGradient(0, 0, w, h * .6);
+    shine.addColorStop(0, 'rgba(255,255,255,.28)');
+    shine.addColorStop(.5, 'rgba(255,255,255,0)');
+    ctx.fillStyle = shine;
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = 'rgba(255,248,232,.9)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `600 ${Math.max(14, Math.floor(w * 0.045))}px "Playfair Display", serif`;
+    ctx.fillText('? SCRATCH HERE ?', w / 2, h / 2);
+  }
+
+  sizeCanvas();
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * (canvas.width / r.width), y: (e.clientY - r.top) * (canvas.height / r.height) };
+  }
+  function scratchAt(x, y, prev) {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.lineWidth = Math.max(28, canvas.width * 0.09);
+    ctx.strokeStyle = 'rgba(0,0,0,1)';
+    ctx.beginPath();
+    ctx.moveTo(prev ? prev.x : x, prev ? prev.y : y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
+  function onDown(e) {
+    if (completed) return;
+    scratching = true;
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+    const p = getPos(e); scratchAt(p.x, p.y, null); last = p; e.preventDefault();
+  }
+  function onMove(e) {
+    if (!scratching || completed) return;
+    const p = getPos(e); scratchAt(p.x, p.y, last); last = p;
+    if (++checks % 6 === 0) checkProgress();
+    e.preventDefault();
+  }
+  function onUp() { if (!scratching) return; scratching = false; last = null; checkProgress(); }
+  function scratchedPercent() {
+    const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let cleared = 0, total = 0;
+    for (let i = 3; i < data.length; i += 16) { total++; if (data[i] < 128) cleared++; }
+    return cleared / total;
+  }
+  function checkProgress() { if (!completed && scratchedPercent() >= 0.65) finishScratch(); }
+  function finishScratch() {
+    completed = true;
+    canvas.removeEventListener('pointerdown', onDown);
+    canvas.removeEventListener('pointermove', onMove);
+    canvas.removeEventListener('pointerup', onUp);
+    canvas.removeEventListener('pointercancel', onUp);
+    canvas.style.opacity = '0';
+    setTimeout(() => { wrap.hidden = true; done.hidden = false; }, 800);
+  }
+
+  canvas.addEventListener('pointerdown', onDown);
+  canvas.addEventListener('pointermove', onMove);
+  canvas.addEventListener('pointerup', onUp);
+  canvas.addEventListener('pointercancel', onUp);
+}
