@@ -47,16 +47,16 @@ albumTabs.forEach((tab, index) => {
 });
 
 const galleryImages = [
-  { src: '/assets/gallery/A25I9462.jpg', alt: 'Pelli Koduku celebration', caption: 'Pelli Koduku' },
-  { src: '/assets/gallery/A25I8942.jpg', alt: 'Haldi celebration', caption: 'Haldi celebration' },
-  { src: '/assets/gallery/A25I9111.jpg', alt: 'Mehendi celebration', caption: 'Mehendi celebration' },
+  { src: '/assets/gallery/upright/A25I9462.jpg', alt: 'Pelli Koduku celebration', caption: 'Pelli Koduku' },
+  { src: '/assets/gallery/upright/A25I8942.jpg', alt: 'Haldi celebration', caption: 'Haldi celebration' },
+  { src: '/assets/gallery/upright/A25I9111.jpg', alt: 'Mehendi celebration', caption: 'Mehendi celebration' },
   { src: '/assets/gallery/A25I9163.jpg', alt: 'Wedding celebration', caption: 'Wedding celebration' },
-  { src: '/assets/gallery/A25I9108.jpg', alt: 'A wedding moment', caption: 'A wedding moment' },
-  { src: '/assets/gallery/A25I8862.jpg', alt: 'Bhuvan and Manasa with family', caption: 'With family' },
-  { src: '/assets/gallery/A25I8939.jpg', alt: 'A joyful wedding moment', caption: 'A joyful moment' },
+  { src: '/assets/gallery/upright/A25I9108.jpg', alt: 'A wedding moment', caption: 'A wedding moment' },
+  { src: '/assets/gallery/upright/A25I8862.jpg', alt: 'Bhuvan and Manasa with family', caption: 'With family' },
+  { src: '/assets/gallery/upright/A25I8939.jpg', alt: 'A joyful wedding moment', caption: 'A joyful moment' },
   { src: '/assets/gallery/A25I8946.jpg', alt: 'Bhuvan and Manasa with loved ones', caption: 'Together with loved ones' },
-  { src: '/assets/A25I8855.JPG', alt: 'A joyful celebration moment', caption: 'A joyful celebration moment' },
-  { src: '/assets/A25I8938.JPG', alt: 'Family togetherness', caption: 'Family togetherness' },
+  { src: '/assets/gallery/upright/A25I8855-corrected.jpg', alt: 'A joyful celebration moment', caption: 'A joyful celebration moment' },
+  { src: '/assets/gallery/upright/A25I8938-corrected.jpg', alt: 'Family togetherness', caption: 'Family togetherness' },
   { src: '/assets/A25I9468.JPG', alt: 'Celebration portrait', caption: 'Celebration portrait' },
   { src: '/assets/A25I9471.JPG', alt: 'Wedding memories', caption: 'Wedding memories' }
 ];
@@ -64,132 +64,170 @@ const galleryImages = [
 function getPhotoOrientationFromRatio(width, height) {
   if (!width || !height) return 'square';
   const ratio = width / height;
-  if (ratio > 1.2) return 'landscape';
-  if (ratio < 0.85) return 'portrait';
+  if (ratio > 1.15) return 'landscape';
+  if (ratio < 0.87) return 'portrait';
   return 'square';
 }
 
-function getAutoLayoutSpan(imageRatio, index, total) {
-  const orientation = getPhotoOrientationFromRatio(imageRatio, 1);
-
-  if (total === 1) return { x: 1, y: 1 };
-  if (total === 2) return { x: 1, y: 1 };
-  if (total === 3) {
-    if (index === 0) return { x: 2, y: 1 };
-    return { x: 1, y: 1 };
-  }
-  if (total <= 4) {
-    if (index === 0) return { x: 2, y: 1 };
-    return { x: 1, y: 1 };
-  }
-
-  if (orientation === 'portrait') return { x: 1, y: 2 };
-  if (orientation === 'landscape') return { x: 2, y: 1 };
-  return { x: 1, y: 1 };
-}
-
-function getColumnsForTotal(total) {
-  if (total <= 1) return 1;
-  if (total <= 2) return 2;
-  if (total <= 6) return 3;
-  return 4;
-}
-
-function renderDynamicCollage(images) {
-  const target = document.getElementById('dynamicCollage');
-  if (!target) return;
-
-  target.innerHTML = '';
-  if (!images.length) {
-    target.innerHTML = '<p class="album-empty">No photos added yet.</p>';
-    return;
-  }
-
-  const columns = getColumnsForTotal(images.length);
-  target.style.setProperty('--dynamic-cols', String(columns));
-
-  const requests = images.map((item) => new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve({ ...item, ratio: img.naturalWidth / img.naturalHeight || 1 });
-    img.onerror = () => resolve({ ...item, ratio: 1 });
-    img.src = item.src;
-  }));
-
-  Promise.all(requests).then((items) => {
-    items.forEach((item, index) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'album-photo dynamic-collage-item';
-      button.dataset.photo = item.src;
-      button.dataset.caption = item.caption;
-      button.style.setProperty('--image-ratio', String(item.ratio || 1));
-
-      const span = getAutoLayoutSpan(item.ratio || 1, index, items.length);
-      button.style.setProperty('--span-x', String(span.x));
-      button.style.setProperty('--span-y', String(span.y));
-
-      const img = document.createElement('img');
-      img.src = item.src;
-      img.alt = item.alt;
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      img.style.objectFit = 'contain';
-
-      const label = document.createElement('span');
-      label.textContent = String(index + 1);
-
-      button.append(img, label);
-      target.append(button);
-    });
-
-    const photoButtons = [...document.querySelectorAll('.album-photo')];
-    const lightbox = document.querySelector('.photo-lightbox');
-    const lightboxImage = document.querySelector('.lightbox-image');
-    const lightboxCaption = document.querySelector('.lightbox-caption');
-    let activePhotoIndex = 0;
-
-    function showLightboxPhoto(index) {
-      if (!photoButtons.length || !lightbox || !lightboxImage || !lightboxCaption) return;
-      activePhotoIndex = (index + photoButtons.length) % photoButtons.length;
-      const photo = photoButtons[activePhotoIndex];
-      const image = photo.querySelector('img');
-      lightboxImage.src = photo.dataset.photo;
-      lightboxImage.alt = image.alt;
-      lightboxCaption.textContent = photo.dataset.caption;
-      lightboxImage.style.transform = 'none';
-    }
-
-    if (lightbox && photoButtons.length) {
-      photoButtons.forEach((photo, index) => {
-        photo.addEventListener('click', () => {
-          showLightboxPhoto(index);
-          lightbox.showModal();
-        });
-      });
-
-      const closeButton = document.querySelector('.lightbox-close');
-      const previousButton = document.querySelector('.lightbox-previous');
-      const nextButton = document.querySelector('.lightbox-next');
-
-      closeButton?.addEventListener('click', () => lightbox.close());
-      previousButton?.addEventListener('click', () => showLightboxPhoto(activePhotoIndex - 1));
-      nextButton?.addEventListener('click', () => showLightboxPhoto(activePhotoIndex + 1));
-      lightbox.addEventListener('click', (event) => {
-        if (event.target === lightbox) lightbox.close();
-      });
-      lightbox.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowLeft') showLightboxPhoto(activePhotoIndex - 1);
-        if (event.key === 'ArrowRight') showLightboxPhoto(activePhotoIndex + 1);
-        if (event.key === 'Escape') {
-          event.preventDefault();
-          lightbox.close();
-        }
-      });
-    }
+function loadGalleryImage(item) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => {
+      const width = image.naturalWidth;
+      const height = image.naturalHeight;
+      resolve({ ...item, width, height, ratio: width / height, orientation: getPhotoOrientationFromRatio(width, height) });
+    };
+    image.onerror = () => resolve({ ...item, width: 1, height: 1, ratio: 1, orientation: 'square' });
+    image.src = item.src;
   });
 }
 
-renderDynamicCollage(galleryImages);
+function calculateCollageRows(items, width) {
+  const gap = width < 520 ? 8 : 12;
+  const minimumCardWidth = width < 520 ? 116 : 156;
+  const maxItemsPerRow = Math.min(4, Math.max(1, Math.floor((width + gap) / (minimumCardWidth + gap))));
+  const targetHeight = width < 520 ? 190 : width < 900 ? 235 : 270;
+  const costs = Array(items.length + 1).fill(Infinity);
+  const previous = Array(items.length + 1).fill(-1);
+  costs[0] = 0;
+
+  for (let end = 1; end <= items.length; end += 1) {
+    const firstStart = Math.max(0, end - maxItemsPerRow);
+    for (let start = firstStart; start < end; start += 1) {
+      const rowItems = items.slice(start, end);
+      const ratioTotal = rowItems.reduce((sum, item) => sum + item.ratio, 0);
+      const rowHeight = (width - gap * (rowItems.length - 1)) / ratioTotal;
+      const heightCost = Math.log(Math.max(rowHeight, 1) / targetHeight) ** 2;
+      const singletonCost = rowItems.length === 1 && items.length > 1 ? 0.2 : 0;
+      const extremeHeightCost = rowHeight < targetHeight * 0.62 || rowHeight > targetHeight * 1.55 ? 0.25 : 0;
+      const cost = costs[start] + heightCost + singletonCost + extremeHeightCost;
+
+      if (cost < costs[end]) {
+        costs[end] = cost;
+        previous[end] = start;
+      }
+    }
+  }
+
+  const rows = [];
+  for (let end = items.length; end > 0;) {
+    const start = previous[end];
+    rows.unshift(items.slice(start, end));
+    end = start;
+  }
+  return { rows, gap };
+}
+
+const dynamicCollage = document.getElementById('dynamicCollage');
+const photoCount = document.querySelector('[data-gallery-count]');
+const photoLightbox = document.querySelector('.photo-lightbox');
+const lightboxImage = document.querySelector('.lightbox-image');
+const lightboxCaption = document.querySelector('.lightbox-caption');
+let collageItems = [];
+let photoButtons = [];
+let activePhotoIndex = 0;
+let lastCollageWidth = 0;
+
+if (photoCount) photoCount.textContent = String(galleryImages.length);
+
+function showLightboxPhoto(index) {
+  if (!photoButtons.length || !photoLightbox || !lightboxImage || !lightboxCaption) return;
+  activePhotoIndex = (index + photoButtons.length) % photoButtons.length;
+  const photo = photoButtons[activePhotoIndex];
+  const image = photo.querySelector('img');
+  lightboxImage.src = photo.dataset.photo;
+  lightboxImage.alt = image.alt;
+  lightboxCaption.textContent = photo.dataset.caption;
+}
+
+function createPhotoButton(item, index) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'album-photo dynamic-collage-item';
+  button.dataset.photo = item.src;
+  button.dataset.caption = item.caption;
+  button.dataset.orientation = item.orientation;
+  button.style.setProperty('--image-ratio', String(item.ratio));
+
+  const image = document.createElement('img');
+  image.src = item.src;
+  image.alt = item.alt;
+  image.loading = index < 4 ? 'eager' : 'lazy';
+  image.decoding = 'async';
+
+  const label = document.createElement('span');
+  label.textContent = String(index + 1);
+
+  button.append(image, label);
+  return button;
+}
+
+function layoutDynamicCollage() {
+  if (!dynamicCollage || !collageItems.length) return;
+  const width = dynamicCollage.clientWidth;
+  if (!width || Math.abs(width - lastCollageWidth) < 2) return;
+  lastCollageWidth = width;
+
+  const { rows, gap } = calculateCollageRows(collageItems, width);
+  const fragment = document.createDocumentFragment();
+  let imageIndex = 0;
+
+  rows.forEach((rowItems) => {
+    const row = document.createElement('div');
+    row.className = 'collage-row';
+    row.style.setProperty('--row-gap', `${gap}px`);
+    row.style.gridTemplateColumns = rowItems.map((item) => `${item.ratio}fr`).join(' ');
+
+    rowItems.forEach((item) => {
+      row.append(createPhotoButton(item, imageIndex));
+      imageIndex += 1;
+    });
+    fragment.append(row);
+  });
+
+  dynamicCollage.replaceChildren(fragment);
+  photoButtons = [...dynamicCollage.querySelectorAll('.album-photo')];
+}
+
+if (dynamicCollage) {
+  if (!galleryImages.length) {
+    dynamicCollage.innerHTML = '<p class="album-empty">No photos added yet.</p>';
+  } else {
+    Promise.all(galleryImages.map(loadGalleryImage)).then((items) => {
+      collageItems = items;
+      layoutDynamicCollage();
+    });
+
+    if ('ResizeObserver' in window) {
+      const collageObserver = new ResizeObserver(layoutDynamicCollage);
+      collageObserver.observe(dynamicCollage);
+    } else {
+      window.addEventListener('resize', layoutDynamicCollage);
+    }
+
+    dynamicCollage.addEventListener('click', (event) => {
+      const photo = event.target.closest('.album-photo');
+      if (!photo) return;
+      showLightboxPhoto(photoButtons.indexOf(photo));
+      photoLightbox?.showModal();
+    });
+  }
+}
+
+document.querySelector('.lightbox-close')?.addEventListener('click', () => photoLightbox?.close());
+document.querySelector('.lightbox-previous')?.addEventListener('click', () => showLightboxPhoto(activePhotoIndex - 1));
+document.querySelector('.lightbox-next')?.addEventListener('click', () => showLightboxPhoto(activePhotoIndex + 1));
+photoLightbox?.addEventListener('click', (event) => {
+  if (event.target === photoLightbox) photoLightbox.close();
+});
+photoLightbox?.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowLeft') showLightboxPhoto(activePhotoIndex - 1);
+  if (event.key === 'ArrowRight') showLightboxPhoto(activePhotoIndex + 1);
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    photoLightbox.close();
+  }
+});
 
 const galleryVideos = [];
 const videoGrid = document.getElementById('albumVideoGrid');
@@ -212,47 +250,6 @@ if (videoGrid && videoEmptyState) {
     caption.textContent = videoItem.title;
     figure.append(video, caption);
     videoGrid.append(figure);
-  });
-}
-
-const lightbox = document.querySelector('.photo-lightbox');
-const photoButtons = [...document.querySelectorAll('.album-photo')];
-const lightboxImage = document.querySelector('.lightbox-image');
-const lightboxCaption = document.querySelector('.lightbox-caption');
-let activePhotoIndex = 0;
-
-function showLightboxPhoto(index) {
-  if (!photoButtons.length) return;
-  activePhotoIndex = (index + photoButtons.length) % photoButtons.length;
-  const photo = photoButtons[activePhotoIndex];
-  const image = photo.querySelector('img');
-  lightboxImage.src = photo.dataset.photo;
-  lightboxImage.alt = image.alt;
-  lightboxImage.classList.toggle('is-rotated', photo.dataset.rotation === '-90');
-  lightboxCaption.textContent = photo.dataset.caption;
-}
-
-if (lightbox && photoButtons.length) {
-  photoButtons.forEach((photo, index) => {
-    photo.addEventListener('click', () => {
-      showLightboxPhoto(index);
-      lightbox.showModal();
-    });
-  });
-
-  document.querySelector('.lightbox-close').addEventListener('click', () => lightbox.close());
-  document.querySelector('.lightbox-previous').addEventListener('click', () => showLightboxPhoto(activePhotoIndex - 1));
-  document.querySelector('.lightbox-next').addEventListener('click', () => showLightboxPhoto(activePhotoIndex + 1));
-  lightbox.addEventListener('click', (event) => {
-    if (event.target === lightbox) lightbox.close();
-  });
-  lightbox.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft') showLightboxPhoto(activePhotoIndex - 1);
-    if (event.key === 'ArrowRight') showLightboxPhoto(activePhotoIndex + 1);
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      lightbox.close();
-    }
   });
 }
 
