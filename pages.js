@@ -47,18 +47,18 @@ albumTabs.forEach((tab, index) => {
 });
 
 const galleryImages = [
-  { src: '/assets/gallery/upright/A25I9462.jpg', alt: 'Pelli Koduku celebration', caption: 'Pelli Koduku' },
-  { src: '/assets/gallery/upright/A25I8942.jpg', alt: 'Haldi celebration', caption: 'Haldi celebration' },
-  { src: '/assets/gallery/upright/A25I9111.jpg', alt: 'Mehendi celebration', caption: 'Mehendi celebration' },
-  { src: '/assets/gallery/A25I9163.jpg', alt: 'Wedding celebration', caption: 'Wedding celebration' },
-  { src: '/assets/gallery/upright/A25I9108.jpg', alt: 'A wedding moment', caption: 'A wedding moment' },
-  { src: '/assets/gallery/upright/A25I8862.jpg', alt: 'Bhuvan and Manasa with family', caption: 'With family' },
-  { src: '/assets/gallery/upright/A25I8939.jpg', alt: 'A joyful wedding moment', caption: 'A joyful moment' },
-  { src: '/assets/gallery/A25I8946.jpg', alt: 'Bhuvan and Manasa with loved ones', caption: 'Together with loved ones' },
-  { src: '/assets/gallery/upright/A25I8855-corrected.jpg', alt: 'A joyful celebration moment', caption: 'A joyful celebration moment' },
-  { src: '/assets/gallery/upright/A25I8938-corrected.jpg', alt: 'Family togetherness', caption: 'Family togetherness' },
-  { src: '/assets/A25I9468.JPG', alt: 'Celebration portrait', caption: 'Celebration portrait' },
-  { src: '/assets/A25I9471.JPG', alt: 'Wedding memories', caption: 'Wedding memories' }
+  { src: '/assets/gallery/upright/A25I9462.jpg', alt: 'Pelli Koduku celebration', caption: '' },
+  { src: '/assets/gallery/upright/A25I8942.jpg', alt: 'Haldi celebration', caption: '' },
+  { src: '/assets/gallery/upright/A25I9111.jpg', alt: 'Mehendi celebration', caption: '' },
+  { src: '/assets/gallery/A25I9163.jpg', alt: 'Wedding celebration', caption: '' },
+  { src: '/assets/gallery/upright/A25I9108.jpg', alt: 'A wedding moment', caption: '' },
+  { src: '/assets/gallery/upright/A25I8862.jpg', alt: 'Bhuvan and Manasa with family', caption: '' },
+  { src: '/assets/gallery/upright/A25I8939.jpg', alt: 'A joyful wedding moment', caption: '' },
+  { src: '/assets/gallery/A25I8946.jpg', alt: 'Bhuvan and Manasa with loved ones', caption: '' },
+  { src: '/assets/gallery/upright/A25I8855-corrected.jpg', alt: 'A joyful celebration moment', caption: '' },
+  { src: '/assets/gallery/upright/A25I8938-corrected.jpg', alt: 'Family togetherness', caption: '' },
+  { src: '/assets/A25I9468.JPG', alt: 'Celebration portrait', caption: '' },
+  { src: '/assets/A25I9471.JPG', alt: 'Wedding memories', caption: '' }
 ];
 
 function getPhotoOrientationFromRatio(width, height) {

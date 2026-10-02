@@ -267,3 +267,5 @@ body.dark-theme .youtube-watch-link{color:var(--gold-light);border-color:var(--g
   .album-photo span{font-size:13px}
   .album-tabs button{padding:10px 16px 12px}
 }
+
+.lightbox-caption:empty{display:none}
