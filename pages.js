@@ -47,46 +47,52 @@ albumTabs.forEach((tab, index) => {
 });
 
 const galleryImages = [
-  { src: '/assets/gallery/A25I9462.jpg', alt: 'Pelli Koduku celebration', caption: 'Pelli Koduku', rotation: '-90' },
-  { src: '/assets/gallery/A25I8942.jpg', alt: 'Haldi celebration', caption: 'Haldi celebration', rotation: '-90' },
-  { src: '/assets/gallery/A25I9111.jpg', alt: 'Mehendi celebration', caption: 'Mehendi celebration', rotation: '-90', crop: 'right' },
+  { src: '/assets/gallery/A25I9462.jpg', alt: 'Pelli Koduku celebration', caption: 'Pelli Koduku' },
+  { src: '/assets/gallery/A25I8942.jpg', alt: 'Haldi celebration', caption: 'Haldi celebration' },
+  { src: '/assets/gallery/A25I9111.jpg', alt: 'Mehendi celebration', caption: 'Mehendi celebration' },
   { src: '/assets/gallery/A25I9163.jpg', alt: 'Wedding celebration', caption: 'Wedding celebration' },
-  { src: '/assets/gallery/A25I9108.jpg', alt: 'A wedding moment', caption: 'A wedding moment', rotation: '-90', crop: 'right' },
-  { src: '/assets/gallery/A25I8862.jpg', alt: 'Bhuvan and Manasa with family', caption: 'With family', rotation: '-90' },
-  { src: '/assets/gallery/A25I8939.jpg', alt: 'A joyful wedding moment', caption: 'A joyful moment', rotation: '-90' },
+  { src: '/assets/gallery/A25I9108.jpg', alt: 'A wedding moment', caption: 'A wedding moment' },
+  { src: '/assets/gallery/A25I8862.jpg', alt: 'Bhuvan and Manasa with family', caption: 'With family' },
+  { src: '/assets/gallery/A25I8939.jpg', alt: 'A joyful wedding moment', caption: 'A joyful moment' },
   { src: '/assets/gallery/A25I8946.jpg', alt: 'Bhuvan and Manasa with loved ones', caption: 'Together with loved ones' },
-  { src: '/assets/A25I8855.JPG', alt: 'A joyful celebration moment', caption: 'A joyful celebration moment', rotation: '-90' },
-  { src: '/assets/A25I8938.JPG', alt: 'Family togetherness', caption: 'Family togetherness', rotation: '-90' },
-  { src: '/assets/A25I9468.JPG', alt: 'Celebration portrait', caption: 'Celebration portrait', rotation: '-90' },
-  { src: '/assets/A25I9471.JPG', alt: 'Wedding memories', caption: 'Wedding memories', rotation: '-90' }
+  { src: '/assets/A25I8855.JPG', alt: 'A joyful celebration moment', caption: 'A joyful celebration moment' },
+  { src: '/assets/A25I8938.JPG', alt: 'Family togetherness', caption: 'Family togetherness' },
+  { src: '/assets/A25I9468.JPG', alt: 'Celebration portrait', caption: 'Celebration portrait' },
+  { src: '/assets/A25I9471.JPG', alt: 'Wedding memories', caption: 'Wedding memories' }
 ];
 
-function getDynamicSpan(index, total) {
-  if (total === 1) return { x: 3, y: 3 };
-  if (total === 2) return { x: 2, y: 3 };
+function getPhotoOrientationFromRatio(width, height) {
+  if (!width || !height) return 'square';
+  const ratio = width / height;
+  if (ratio > 1.2) return 'landscape';
+  if (ratio < 0.85) return 'portrait';
+  return 'square';
+}
 
-  const columns = total <= 4 ? 2 : total <= 8 ? 3 : 4;
+function getAutoLayoutSpan(imageRatio, index, total) {
+  const orientation = getPhotoOrientationFromRatio(imageRatio, 1);
 
-  if (index === 0 && total > 1) {
-    return { x: columns === 2 ? 2 : 2, y: columns === 2 ? 2 : 2 };
+  if (total === 1) return { x: 1, y: 1 };
+  if (total === 2) return { x: 1, y: 1 };
+  if (total === 3) {
+    if (index === 0) return { x: 2, y: 1 };
+    return { x: 1, y: 1 };
   }
-
   if (total <= 4) {
+    if (index === 0) return { x: 2, y: 1 };
     return { x: 1, y: 1 };
   }
 
-  if (total <= 8) {
-    const oddEven = index % 3;
-    if (oddEven === 0) return { x: 1, y: 2 };
-    if (oddEven === 1) return { x: 2, y: 1 };
-    return { x: 1, y: 1 };
-  }
+  if (orientation === 'portrait') return { x: 1, y: 2 };
+  if (orientation === 'landscape') return { x: 2, y: 1 };
+  return { x: 1, y: 1 };
+}
 
-  const remainder = index % 4;
-  if (remainder === 0) return { x: 2, y: 1 };
-  if (remainder === 1) return { x: 1, y: 2 };
-  if (remainder === 2) return { x: 1, y: 1 };
-  return { x: 2, y: 2 };
+function getColumnsForTotal(total) {
+  if (total <= 1) return 1;
+  if (total <= 2) return 2;
+  if (total <= 6) return 3;
+  return 4;
 }
 
 function renderDynamicCollage(images) {
@@ -99,34 +105,87 @@ function renderDynamicCollage(images) {
     return;
   }
 
-  const collageCount = Math.min(images.length, 12);
-  const columns = collageCount <= 2 ? collageCount : collageCount <= 4 ? 2 : collageCount <= 8 ? 3 : 4;
+  const columns = getColumnsForTotal(images.length);
   target.style.setProperty('--dynamic-cols', String(columns));
 
-  images.forEach((item, index) => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'album-photo dynamic-collage-item';
-    button.dataset.photo = item.src;
-    button.dataset.caption = item.caption;
-    if (item.rotation) button.dataset.rotation = item.rotation;
-    if (item.crop) button.dataset.crop = item.crop;
-
-    const span = getDynamicSpan(index, images.length);
-    button.style.setProperty('--span-x', String(span.x));
-    button.style.setProperty('--span-y', String(span.y));
-
-    const img = document.createElement('img');
+  const requests = images.map((item) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ ...item, ratio: img.naturalWidth / img.naturalHeight || 1 });
+    img.onerror = () => resolve({ ...item, ratio: 1 });
     img.src = item.src;
-    img.alt = item.alt;
-    img.loading = 'lazy';
-    img.decoding = 'async';
+  }));
 
-    const label = document.createElement('span');
-    label.textContent = String(index + 1);
+  Promise.all(requests).then((items) => {
+    items.forEach((item, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'album-photo dynamic-collage-item';
+      button.dataset.photo = item.src;
+      button.dataset.caption = item.caption;
+      button.style.setProperty('--image-ratio', String(item.ratio || 1));
 
-    button.append(img, label);
-    target.append(button);
+      const span = getAutoLayoutSpan(item.ratio || 1, index, items.length);
+      button.style.setProperty('--span-x', String(span.x));
+      button.style.setProperty('--span-y', String(span.y));
+
+      const img = document.createElement('img');
+      img.src = item.src;
+      img.alt = item.alt;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.style.objectFit = 'contain';
+
+      const label = document.createElement('span');
+      label.textContent = String(index + 1);
+
+      button.append(img, label);
+      target.append(button);
+    });
+
+    const photoButtons = [...document.querySelectorAll('.album-photo')];
+    const lightbox = document.querySelector('.photo-lightbox');
+    const lightboxImage = document.querySelector('.lightbox-image');
+    const lightboxCaption = document.querySelector('.lightbox-caption');
+    let activePhotoIndex = 0;
+
+    function showLightboxPhoto(index) {
+      if (!photoButtons.length || !lightbox || !lightboxImage || !lightboxCaption) return;
+      activePhotoIndex = (index + photoButtons.length) % photoButtons.length;
+      const photo = photoButtons[activePhotoIndex];
+      const image = photo.querySelector('img');
+      lightboxImage.src = photo.dataset.photo;
+      lightboxImage.alt = image.alt;
+      lightboxCaption.textContent = photo.dataset.caption;
+      lightboxImage.style.transform = 'none';
+    }
+
+    if (lightbox && photoButtons.length) {
+      photoButtons.forEach((photo, index) => {
+        photo.addEventListener('click', () => {
+          showLightboxPhoto(index);
+          lightbox.showModal();
+        });
+      });
+
+      const closeButton = document.querySelector('.lightbox-close');
+      const previousButton = document.querySelector('.lightbox-previous');
+      const nextButton = document.querySelector('.lightbox-next');
+
+      closeButton?.addEventListener('click', () => lightbox.close());
+      previousButton?.addEventListener('click', () => showLightboxPhoto(activePhotoIndex - 1));
+      nextButton?.addEventListener('click', () => showLightboxPhoto(activePhotoIndex + 1));
+      lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) lightbox.close();
+      });
+      lightbox.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') showLightboxPhoto(activePhotoIndex - 1);
+        if (event.key === 'ArrowRight') showLightboxPhoto(activePhotoIndex + 1);
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          lightbox.close();
+        }
+      });
+    }
   });
 }
 

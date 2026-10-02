@@ -88,17 +88,24 @@ html{scrollbar-gutter:stable}
 .dynamic-collage{
   --dynamic-cols: 3;
   display:grid;
-  grid-template-columns:repeat(var(--dynamic-cols), minmax(0, 1fr));
-  gap:14px;
-  grid-auto-rows:118px;
+  grid-template-columns:repeat(var(--dynamic-cols), minmax(140px, 1fr));
+  gap:12px;
+  align-items:stretch;
 }
 
 .dynamic-collage-item{
+  position:relative;
+  display:block;
+  width:100%;
+  min-height:170px;
+  border:0;
+  border-radius:20px;
+  overflow:hidden;
+  background:#f6efe8;
+  box-shadow:0 10px 22px rgba(40,22,14,.08);
+  padding:0;
   grid-column:span var(--span-x, 1);
   grid-row:span var(--span-y, 1);
-  width:100%;
-  height:100%;
-  min-height:118px;
 }
 
 .album-photo{
@@ -106,45 +113,40 @@ html{scrollbar-gutter:stable}
   position:relative;
   display:block;
   width:100%;
-  aspect-ratio:4/3;
   overflow:hidden;
   padding:0;
   border:0;
-  background:#302427;
+  background:#f3ece4;
   text-align:left;
 }
 
-.album-photo img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
-.album-photo:hover img,.album-photo:focus-visible img{transform:scale(1.035)}
-.album-photo[data-rotation="-90"] img{
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:100cqh;
-  height:100cqw;
-  transform:translate(-50%,-50%) rotate(-90deg);
+.album-photo img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  background:#f6efe8;
+  transition:transform .35s ease;
 }
-.album-photo[data-crop="right"] img{object-position:right center}
-.album-photo[data-rotation="-90"]:hover img,
-.album-photo[data-rotation="-90"]:focus-visible img{
-  transform:translate(-50%,-50%) rotate(-90deg) scale(1.035);
-}
+.album-photo:hover img,.album-photo:focus-visible img{transform:scale(1.02)}
 .album-photo::after{
   content:"";
   position:absolute;
-  inset:40% 0 0;
-  background:linear-gradient(transparent,rgba(30,18,19,.7));
+  inset:0;
+  background:linear-gradient(180deg,rgba(33,17,20,.02),rgba(33,17,20,.22));
   pointer-events:none;
 }
 .album-photo span{
   position:absolute;
   z-index:1;
-  left:16px;
-  right:16px;
-  bottom:13px;
+  left:14px;
+  right:14px;
+  bottom:12px;
   color:#fffaf4;
-  font-size:18px;
-  text-shadow:0 1px 8px rgba(0,0,0,.35);
+  font-size:15px;
+  font-weight:600;
+  text-shadow:0 1px 8px rgba(0,0,0,.42);
 }
 
 .album-video-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
