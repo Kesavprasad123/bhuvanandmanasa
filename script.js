@@ -520,8 +520,8 @@ function initScratchCard() {
     ctx.fillStyle = 'rgba(255,248,232,.9)';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = `600 ${Math.max(14, Math.floor(w * 0.045))}px "Playfair Display", serif`;
-    ctx.fillText('? SCRATCH HERE ?', w / 2, h / 2);
+    ctx.font = `400 ${Math.max(28, Math.floor(w * 0.11))}px "Great Vibes", cursive`;
+    ctx.fillText('!! scratch here !!', w / 2, h / 2);
   }
 
   sizeCanvas();
@@ -567,7 +567,35 @@ function initScratchCard() {
     canvas.removeEventListener('pointerup', onUp);
     canvas.removeEventListener('pointercancel', onUp);
     canvas.style.opacity = '0';
+    createScratchBlast();
     setTimeout(() => { wrap.hidden = true; done.hidden = false; }, 800);
+  }
+
+  function createScratchBlast() {
+    if (document.querySelector('#scratchWrap .js-blast')) return;
+    const blast = document.createElement('div');
+    blast.className = 'js-blast';
+    blast.setAttribute('aria-hidden', 'true');
+    wrap.appendChild(blast);
+    const symbols = ['❀', '✿', '❁', '✦', '✧', '•'];
+    const colors = ['#d99aa3', '#bd8a42', '#e4c994', '#aab59b', '#8e3045'];
+    const count = window.innerWidth <= 600 ? 30 : 50;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      const angle = Math.random() * Math.PI * 2;
+      const distance = window.innerWidth <= 600 ? 120 + Math.random() * 120 : 180 + Math.random() * 160;
+      p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      p.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+      p.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+      p.style.setProperty('--size', `${7 + Math.random() * 14}px`);
+      p.style.setProperty('--duration', `${750 + Math.random() * 650}ms`);
+      p.style.setProperty('--delay', `${Math.random() * 100}ms`);
+      p.style.setProperty('--rotation', `${-360 + Math.random() * 720}deg`);
+      p.style.setProperty('--scale', `${.65 + Math.random() * .65}`);
+      p.style.color = colors[Math.floor(Math.random() * colors.length)];
+      blast.appendChild(p);
+    }
+    setTimeout(() => blast.remove(), 1800);
   }
 
   canvas.addEventListener('pointerdown', onDown);
