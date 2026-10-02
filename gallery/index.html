@@ -27,15 +27,21 @@
           btn.textContent = '🔊';
           btn.setAttribute('aria-pressed', 'true');
           btn.setAttribute('aria-label', 'Pause gallery music');
-        } catch (e) { /* autoplay blocked; will retry on next tap of the button */ }
+        } catch (e) { /* autoplay blocked by browser */ }
       }
 
-      // Browsers require a user gesture, so music starts on first touch/click anywhere
+      // Try to start immediately when the gallery opens
+      play();
+      window.addEventListener('pageshow', play);
+
+      // Fallbacks in case the browser blocks autoplay
       document.addEventListener('pointerdown', function startOnce(e) {
         if (e.target === btn) return;
         if (!started) play();
-        document.removeEventListener('pointerdown', startOnce);
+        if (started) document.removeEventListener('pointerdown', startOnce);
       });
+      document.addEventListener('touchend', function t() { if (!started) play(); else document.removeEventListener('touchend', t); });
+      document.addEventListener('keydown', function k() { if (!started) play(); else document.removeEventListener('keydown', k); });
 
       btn.addEventListener('click', function () {
         if (audio.paused) { play(); } else {
@@ -95,7 +101,7 @@
     <button class="lightbox-step lightbox-next" type="button" aria-label="Next photo">›</button>
   </dialog>
 
-  <audio id="galleryMusic" src="/assets/blue-instrumental.mp3" loop preload="auto"></audio>
+  <audio id="galleryMusic" src="/assets/blue-instrumental.mp3" loop autoplay preload="auto"></audio>
   <button id="galleryMusicToggle" class="music-toggle" type="button" aria-label="Play gallery music" aria-pressed="false">♪</button>
 
   <footer class="album-footer">
