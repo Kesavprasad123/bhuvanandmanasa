@@ -33,6 +33,22 @@ function selectAlbumTab(selectedTab, moveFocus = false) {
   });
 
   if (moveFocus) selectedTab.focus();
+
+  // Gallery background music is only allowed on the Photos tab
+  const galleryMusicEl = document.getElementById('galleryMusic');
+  if (galleryMusicEl) {
+    if (selectedTab.dataset.albumTab === 'videos') {
+      if (!galleryMusicEl.paused) {
+        window.__galleryMusicWasPlaying = true;
+        galleryMusicEl.pause();
+      }
+    } else if (selectedTab.dataset.albumTab === 'photos') {
+      if (window.__galleryMusicWasPlaying) {
+        window.__galleryMusicWasPlaying = false;
+        galleryMusicEl.play().catch(() => {});
+      }
+    }
+  }
 }
 
 albumTabs.forEach((tab, index) => {
@@ -239,6 +255,11 @@ const lightboxVideo = document.querySelector('.lightbox-video');
 
 function openVideoLightbox(videoItem) {
   if (!videoLightbox || !lightboxVideo) return;
+  const galleryMusicEl = document.getElementById('galleryMusic');
+  if (galleryMusicEl && !galleryMusicEl.paused) {
+    window.__galleryMusicWasPlaying = true; // resume it when back on Photos
+    galleryMusicEl.pause();
+  }
   const source = document.createElement('source');
   source.src = videoItem.src;
   source.type = videoItem.type || 'video/mp4';

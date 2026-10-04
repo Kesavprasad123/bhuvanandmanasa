@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css?v=20261002-07">
   <link rel="stylesheet" href="/pages.css?v=20261002-06">
-  <script src="/pages.js?v=20261002-06" defer></script>
+  <script src="/pages.js?v=20261002-07" defer></script>
   <script>
     (function () {
       const audio = document.getElementById('galleryMusic');
@@ -51,7 +51,11 @@
       document.addEventListener('keydown', function k() { if (!started) play(); else document.removeEventListener('keydown', k); });
 
       btn.addEventListener('click', function () {
-        if (audio.paused) { play(); } else {
+        if (audio.paused) {
+          const videosPanel = document.getElementById('videosPanel');
+          if (videosPanel && !videosPanel.hidden) return; // no background music on Videos tab
+          play();
+        } else {
           audio.pause();
           started = true;
           syncButton();
