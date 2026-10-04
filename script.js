@@ -620,3 +620,25 @@ function initScratchCard() {
     el.hidden = false;
   }, () => {} /* permission denied — stay hidden */, { timeout: 10000 });
 })();
+
+/* ---------- CURTAIN ENTRY ---------- */
+(function () {
+  const curtain = document.getElementById('curtainLayer');
+  const openingSection = document.getElementById('opening');
+  if (!curtain || !openingSection) return;
+  let isOpening = false;
+
+  curtain.addEventListener('click', () => {
+    if (isOpening) return;
+    isOpening = true;
+    curtain.classList.add('is-opening');
+
+    // After curtains finish + 400ms, reveal the envelope
+    setTimeout(() => {
+      curtain.style.display = 'none';
+      openingSection.classList.remove('envelope-hidden');
+      openingSection.classList.add('envelope-reveal');
+    }, 2900);
+  });
+  curtain.addEventListener('touchend', (e) => { e.preventDefault(); curtain.click(); }, { passive: false });
+})();

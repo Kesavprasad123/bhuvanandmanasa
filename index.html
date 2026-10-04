@@ -16,9 +16,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&family=Noto+Serif+Telugu:wght@400;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261002-15">
+  <link rel="stylesheet" href="style.css?v=20261002-16">
 </head>
 <body class="locked">
+
+<!-- CURTAIN ENTRY LAYER -->
+<div id="curtainLayer" class="curtain-layer" aria-label="Tap to open the wedding invitation">
+  <div class="curtain-panel curtain-left"></div>
+  <div class="curtain-panel curtain-right"></div>
+  <div class="curtain-glow"></div>
+  <p class="curtain-hint">✦ Tap the curtain to open ✦</p>
+</div>
 
 <!-- CONTINUOUS FALLING FLOWERS -->
 <div class="falling-flowers"id="fallingFlowers" aria-hidden="true">
@@ -54,7 +62,7 @@
 <audio id="weddingMusic" loop preload="auto"></audio>
 
   <!-- ===================== ENVELOPE INTRO ===================== -->
-  <section id="opening" class="opening">
+  <section id="opening" class="opening envelope-hidden">
     <div class="petals" aria-hidden="true"></div>
     <div class="opening-ornament top">❀　❁　✿　❁　❀</div>
 
@@ -386,6 +394,6 @@
 
 
 
-  <script src="script.js?v=20261002-9"></script>
+  <script src="script.js?v=20261002-10"></script>
 </body>
 </html>
