@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css?v=20261002-01">
+  <link rel="stylesheet" href="/style.css?v=20261002-07">
   <link rel="stylesheet" href="/pages.css?v=20261002-06">
   <script src="/pages.js?v=20261002-06" defer></script>
   <script>
@@ -19,14 +19,21 @@
       if (!audio || !btn) return;
       let started = false;
 
+      function syncButton() {
+        const playing = !audio.paused && !audio.ended;
+        btn.textContent = playing ? '⏸' : '▶';
+        btn.setAttribute('aria-pressed', String(playing));
+        btn.setAttribute('aria-label', playing ? 'Pause gallery music' : 'Play gallery music');
+      }
+      audio.addEventListener('play', syncButton);
+      audio.addEventListener('pause', syncButton);
+
       async function play() {
         try {
           audio.volume = 0.6;
           await audio.play();
           started = true;
-          btn.textContent = '🔊';
-          btn.setAttribute('aria-pressed', 'true');
-          btn.setAttribute('aria-label', 'Pause gallery music');
+          syncButton();
         } catch (e) { /* autoplay blocked by browser */ }
       }
 
@@ -47,9 +54,7 @@
         if (audio.paused) { play(); } else {
           audio.pause();
           started = true;
-          btn.textContent = '♪';
-          btn.setAttribute('aria-pressed', 'false');
-          btn.setAttribute('aria-label', 'Play gallery music');
+          syncButton();
         }
       });
     })();
@@ -102,7 +107,7 @@
   </dialog>
 
   <audio id="galleryMusic" src="/assets/blue-instrumental.mp3" loop autoplay preload="auto"></audio>
-  <button id="galleryMusicToggle" class="music-toggle" type="button" aria-label="Play gallery music" aria-pressed="false">♪</button>
+  <button id="galleryMusicToggle" class="music-toggle" type="button" aria-label="Play gallery music" aria-pressed="false">▶</button>
 
   <dialog class="video-lightbox" aria-label="Video player">
     <button class="video-lightbox-close" type="button" aria-label="Close video">×</button>

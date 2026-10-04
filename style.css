@@ -873,3 +873,7 @@ html {
 .scratch-done .sc-date{font-size:clamp(19px,5vw,26px);margin-bottom:14px}
 .sc-ourday{font-family:"Playfair Display",serif;font-size:12px;letter-spacing:4px;color:var(--sage-dark);margin:0 0 14px}
 @keyframes scIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.music-toggle{transition:transform .2s ease}
+.music-toggle:hover{transform:scale(1.08)}
+.music-toggle:active{transform:scale(.94)}
