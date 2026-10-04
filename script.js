@@ -603,3 +603,20 @@ function initScratchCard() {
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointercancel', onUp);
 }
+
+/* ---------- DISTANCE TO VENUE ---------- */
+(function () {
+  const el = document.getElementById('venueDistance');
+  if (!el || !('geolocation' in navigator)) return;
+  const VENUE = { lat: 17.0387557, lon: 81.8332866 };
+  function haversine(a, b) {
+    const R = 6371, dLat = (b.lat - a.lat) * Math.PI / 180, dLon = (b.lon - a.lon) * Math.PI / 180;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  navigator.geolocation.getCurrentPosition((pos) => {
+    const km = haversine({ lat: pos.coords.latitude, lon: pos.coords.longitude }, VENUE);
+    el.textContent = `?? Distance from you: ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}`;
+    el.hidden = false;
+  }, () => {} /* permission denied — stay hidden */, { timeout: 10000 });
+})();
