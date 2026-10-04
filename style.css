@@ -879,3 +879,5 @@ html {
 .music-toggle:active{transform:scale(.94)}
 
 .venue-distance{font-family:'Playfair Display',serif;font-size:14px;letter-spacing:2px;color:var(--sage-dark);margin:12px 0 0}
+
+#story.section-sage{background:#7ef98f}
