@@ -616,7 +616,7 @@ function initScratchCard() {
   }
   navigator.geolocation.getCurrentPosition((pos) => {
     const km = haversine({ lat: pos.coords.latitude, lon: pos.coords.longitude }, VENUE);
-    el.textContent = `?? Distance from you: ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}`;
+    el.textContent = `Distance from you: ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}`;
     el.hidden = false;
   }, () => {} /* permission denied — stay hidden */, { timeout: 10000 });
 })();
