@@ -229,26 +229,73 @@ photoLightbox?.addEventListener('keydown', (event) => {
   }
 });
 
-const galleryVideos = [];
+const galleryVideos = [
+  { src: '/assets/Bhuvan_Manasa_Wedding_Full_HD_1080p.mp4', type: 'video/mp4', title: 'Wedding Film' }
+];
 const videoGrid = document.getElementById('albumVideoGrid');
 const videoEmptyState = document.getElementById('videoEmptyState');
+const videoLightbox = document.querySelector('.video-lightbox');
+const lightboxVideo = document.querySelector('.lightbox-video');
+
+function openVideoLightbox(videoItem) {
+  if (!videoLightbox || !lightboxVideo) return;
+  const source = document.createElement('source');
+  source.src = videoItem.src;
+  source.type = videoItem.type || 'video/mp4';
+  lightboxVideo.replaceChildren(source);
+  lightboxVideo.load();
+  videoLightbox.showModal();
+  lightboxVideo.play().catch(() => {});
+}
+
+function closeVideoLightbox() {
+  if (!videoLightbox || !lightboxVideo) return;
+  lightboxVideo.pause();
+  lightboxVideo.removeAttribute('src');
+  lightboxVideo.replaceChildren();
+  lightboxVideo.load();
+  videoLightbox.close();
+}
+
+document.querySelector('.video-lightbox-close')?.addEventListener('click', closeVideoLightbox);
+videoLightbox?.addEventListener('click', (event) => {
+  if (event.target === videoLightbox) closeVideoLightbox();
+});
+videoLightbox?.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') { event.preventDefault(); closeVideoLightbox(); }
+});
 
 if (videoGrid && videoEmptyState) {
   videoEmptyState.hidden = galleryVideos.length > 0;
   galleryVideos.forEach((videoItem) => {
     const figure = document.createElement('figure');
     figure.className = 'album-video';
+
+    const thumb = document.createElement('button');
+    thumb.type = 'button';
+    thumb.className = 'video-thumb';
+    thumb.setAttribute('aria-label', `Play video: ${videoItem.title || 'Wedding film'}`);
+
     const video = document.createElement('video');
-    video.controls = true;
+    video.muted = true;
     video.playsInline = true;
     video.preload = 'metadata';
     const source = document.createElement('source');
     source.src = videoItem.src;
     source.type = videoItem.type || 'video/mp4';
     video.append(source);
+
+    const badge = document.createElement('span');
+    badge.className = 'video-play-badge';
+    badge.setAttribute('aria-hidden', 'true');
+    badge.textContent = '▶';
+
+    thumb.append(video, badge);
+    thumb.addEventListener('click', () => openVideoLightbox(videoItem));
+
     const caption = document.createElement('figcaption');
     caption.textContent = videoItem.title;
-    figure.append(video, caption);
+    figure.append(thumb, caption);
     videoGrid.append(figure);
   });
 }

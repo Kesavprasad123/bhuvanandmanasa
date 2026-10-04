@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css?v=20261002-01">
-  <link rel="stylesheet" href="/pages.css?v=20261002-05">
-  <script src="/pages.js?v=20261002-05" defer></script>
+  <link rel="stylesheet" href="/pages.css?v=20261002-06">
+  <script src="/pages.js?v=20261002-06" defer></script>
   <script>
     (function () {
       const audio = document.getElementById('galleryMusic');
@@ -103,6 +103,11 @@
 
   <audio id="galleryMusic" src="/assets/blue-instrumental.mp3" loop autoplay preload="auto"></audio>
   <button id="galleryMusicToggle" class="music-toggle" type="button" aria-label="Play gallery music" aria-pressed="false">♪</button>
+
+  <dialog class="video-lightbox" aria-label="Video player">
+    <button class="video-lightbox-close" type="button" aria-label="Close video">×</button>
+    <video class="lightbox-video" controls playsinline preload="metadata"></video>
+  </dialog>
 
   <footer class="album-footer">
     <a href="https://bhuvanmanasa.in/">Bhuvan &amp; Manasa</a>
