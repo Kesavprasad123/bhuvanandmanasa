@@ -149,30 +149,24 @@
     localStorage.setItem(LANG_KEY, lang);
     document.body.classList.toggle('lang-te', lang === 'te');
     if (lang === 'te') translateAll(); else restoreAll();
-    updateButtonLabels();
   }
 
   function ensureButton() {
     document.querySelectorAll('.floating-nav').forEach((nav) => {
-      if (nav.querySelector('.lang-toggle')) return;
+      if (nav.querySelector('.lang-toggle')) {
+        nav.querySelector('.lang-toggle').textContent = 'ENG / తెలుగు';
+        return;
+      }
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'lang-toggle';
-      btn.setAttribute('aria-label', 'Switch website language');
+      btn.textContent = 'ENG / తెలుగు';
+      btn.setAttribute('aria-label', 'Toggle website language');
       btn.addEventListener('click', () => {
         const next = localStorage.getItem(LANG_KEY) === 'te' ? 'en' : 'te';
         setLanguage(next);
       });
       nav.insertBefore(btn, nav.firstChild);
-    });
-    updateButtonLabels();
-  }
-
-  function updateButtonLabels() {
-    const isTe = localStorage.getItem(LANG_KEY) === 'te';
-    document.querySelectorAll('.lang-toggle').forEach((b) => {
-      b.textContent = isTe ? 'ENG' : 'తెలుగు';
-      b.setAttribute('aria-label', isTe ? 'Switch to English' : 'తెలుగుకు మార్చు');
     });
   }
 
