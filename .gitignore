@@ -1,3 +1,5 @@
 .DS_Store
 Thumbs.db
 .vscode/
+react/node_modules/
+react/dist/
