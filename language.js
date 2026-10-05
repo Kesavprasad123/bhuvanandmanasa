@@ -64,15 +64,7 @@
     'distance from you:': 'మీ నుండి దూరం:',
     'pelli koduku': 'పెళ్లి కొడుకు',
     'pelli kuthuru': 'పెళ్లి కూతురు',
-    'wedding': 'వివాహం',
-    'bhuvan': 'భువన్',
-    'manasa': 'మానస',
-    'kotti venkata subbarao': 'కోటి వెంకట సుబ్బారావు',
-    'smt. kotti padma tulasi': 'శ్రీమతి కోటి పద్మ తులసి',
-    'kotti kesava prasad (brother)': 'కోటి కేశవ ప్రసాద్ (సోదరుడు)',
-    'manyapu satya kiran': 'మణ్యాపు సత్య కిరణ్',
-    'smt. manyapu sujatha (late)': 'శ్రీమతి మణ్యాపు సుజాత (దివంగత)',
-    'manyapu harsha vardhan (brother)': 'మణ్యాపు హర్ష వర్ధన్ (సోదరుడు)'
+    'wedding': 'వివాహం'
   };
 
   const norm = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -96,23 +88,20 @@
   function eachTextTarget(cb) {
     document.querySelectorAll('body *').forEach((el) => {
       if (el.children.length === 0) { cb(el, null); return; }
-      // any direct text-node children, e.g. "Name1<br>&amp; Name2"
-      [...el.childNodes].forEach((n) => {
-        if (n.nodeType === 3 && n.textContent.trim()) cb(el, n);
-      });
+      // element with a leading text node, e.g. a tab button "Photos <span>12</span>"
+      const first = el.firstChild;
+      if (first && first.nodeType === 3 && first.textContent.trim()) cb(el, first);
     });
   }
 
   function translateAll() {
     eachTextTarget((el, textNode) => {
       if (textNode) {
-        const idx = [...el.childNodes].indexOf(textNode);
-        const key = 'i18nText' + idx;
-        if (el.dataset[key] === undefined) {
+        if (el.dataset.i18nText === undefined) {
           const hit = lookup(textNode.textContent);
-          if (hit !== null) { el.dataset[key] = textNode.textContent; textNode.textContent = hit; }
+          if (hit !== null) { el.dataset.i18nText = textNode.textContent; textNode.textContent = hit; }
         } else {
-          const hit = lookup(el.dataset[key]);
+          const hit = lookup(el.dataset.i18nText);
           if (hit !== null) textNode.textContent = hit;
         }
         return;
@@ -134,14 +123,10 @@
       el.textContent = el.dataset.i18n;
       delete el.dataset.i18n;
     });
-    document.querySelectorAll('body *').forEach((el) => {
-      Object.keys(el.dataset).forEach((k) => {
-        if (!k.startsWith('i18nText')) return;
-        const idx = Number(k.slice('i18nText'.length));
-        const node = el.childNodes[idx];
-        if (node && node.nodeType === 3) node.textContent = el.dataset[k];
-        delete el.dataset[k];
-      });
+    document.querySelectorAll('[data-i18n-text]').forEach((el) => {
+      const first = el.firstChild;
+      if (first && first.nodeType === 3) first.textContent = el.dataset.i18nText;
+      delete el.dataset.i18nText;
     });
   }
 
