@@ -30,10 +30,6 @@ The website is designed to provide a smooth experience across:
 * 🖥️ Desktop screens
 * 📲 Tablets
 
-## 💑 Couple
-
-
-
 
 The expected addresses are:
 
