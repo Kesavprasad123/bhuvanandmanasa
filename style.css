@@ -901,3 +901,6 @@ html {
 #opening.envelope-hidden{visibility:hidden;opacity:0}
 #opening.envelope-reveal{animation:envelopeIn 1s ease both}
 @keyframes envelopeIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+
+.lang-toggle{border:1px solid #d7b978;background:rgba(255,255,255,.32);color:var(--rose-dark);border-radius:20px;padding:8px 12px;font-size:13px;white-space:nowrap}
+.lang-toggle:hover{background:rgba(255,255,255,.55)}
