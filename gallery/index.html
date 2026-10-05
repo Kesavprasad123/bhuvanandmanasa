@@ -14,7 +14,7 @@
   <script src="/pages.js?v=20261002-07" defer></script>
   <script src="/language.js?v=20261005-1" defer></script>
   <script>
-    (function () {
+    document.addEventListener('DOMContentLoaded', function () {
       const audio = document.getElementById('galleryMusic');
       const btn = document.getElementById('galleryMusicToggle');
       if (!audio || !btn) return;
@@ -62,7 +62,7 @@
           syncButton();
         }
       });
-    })();
+    });
   </script>
 </head>
 <body class="standalone-page gallery-page">
