@@ -31,6 +31,11 @@ The website is designed to provide a smooth experience across:
 * 📲 Tablets
 
 
+## 💑 Couple
+
+**Bhuvan & Manasa**
+
+
 The expected addresses are:
 
 * `https://bhuvanmanasa.in`
