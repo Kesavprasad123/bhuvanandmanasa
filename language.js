@@ -67,9 +67,9 @@
     'wedding': 'వివాహం',
     'bhuvan': 'భువన్',
     'manasa': 'మానస',
-    'kotti venkata subbarao': 'కొట్టి వెంకట సుబ్బారావు',
-    'smt. kotti padma tulasi': 'శ్రీమతి కొట్టి పద్మ తులసి',
-    'kotti kesava prasad (brother)': 'కొట్టి కేశవ ప్రసాద్ (సోదరుడు)',
+    'kotti venkata subbarao': 'కోటి వెంకట సుబ్బారావు',
+    'smt. kotti padma tulasi': 'శ్రీమతి కోటి పద్మ తులసి',
+    'kotti kesava prasad (brother)': 'కోటి కేశవ ప్రసాద్ (సోదరుడు)',
     'manyapu satya kiran': 'మణ్యాపు సత్య కిరణ్',
     'smt. manyapu sujatha (late)': 'శ్రీమతి మణ్యాపు సుజాత (దివంగత)',
     'manyapu harsha vardhan (brother)': 'మణ్యాపు హర్ష వర్ధన్ (సోదరుడు)'
