@@ -61,10 +61,7 @@
     'live from rajahmundry': 'రాజమండ్రి నుండి లైవ్',
     'wedding videos will appear here.': 'వివాహ వీడియోలు ఇక్కడ కనిపిస్తాయి.',
     'wedding film': 'వివాహ చిత్రం',
-    'distance from you:': 'మీ నుండి దూరం:',
-    'pelli koduku': 'పెళ్లి కొడుకు',
-    'pelli kuthuru': 'పెళ్లి కూతురు',
-    'wedding': 'వివాహం'
+    'distance from you:': 'మీ నుండి దూరం:'
   };
 
   const norm = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -132,7 +129,6 @@
 
   function setLanguage(lang) {
     localStorage.setItem(LANG_KEY, lang);
-    document.body.classList.toggle('lang-te', lang === 'te');
     if (lang === 'te') translateAll(); else restoreAll();
   }
 
@@ -157,9 +153,7 @@
 
   function init() {
     ensureButton();
-    const lang = localStorage.getItem(LANG_KEY);
-    document.body.classList.toggle('lang-te', lang === 'te');
-    if (lang === 'te') translateAll();
+    if (localStorage.getItem(LANG_KEY) === 'te') translateAll();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

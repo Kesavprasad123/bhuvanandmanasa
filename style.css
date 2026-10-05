@@ -904,23 +904,3 @@ html {
 
 .lang-toggle{border:1px solid #d7b978;background:rgba(255,255,255,.32);color:var(--rose-dark);border-radius:20px;padding:8px 12px;font-size:13px;white-space:nowrap}
 .lang-toggle:hover{background:rgba(255,255,255,.55)}
-
-/* ---------- TELUGU MODE ---------- */
-body.lang-te{font-family:"Noto Serif Telugu",serif;line-height:1.8}
-body.lang-te h1{font-family:"Noto Serif Telugu",serif;font-size:clamp(30px,6vw,42px);line-height:1.4}
-body.lang-te h2{font-family:"Noto Serif Telugu",serif;font-size:clamp(24px,4.5vw,34px);line-height:1.5}
-body.lang-te h3{font-family:"Noto Serif Telugu",serif;font-size:clamp(22px,5vw,30px);line-height:1.5}
-body.lang-te .couple-names h3,body.lang-te .final-names{font-size:clamp(30px,7vw,46px)}
-body.lang-te p,body.lang-te address,body.lang-te figcaption{font-size:18px;line-height:1.8}
-body.lang-te .floating-nav a,body.lang-te .lang-toggle{font-size:16px}
-body.lang-te .eyebrow{font-size:13px;letter-spacing:2px}
-body.lang-te .scroll-button,body.lang-te .gold-button,body.lang-te .sc-enter,body.lang-te button{font-size:16px}
-@media (max-width:600px){
-  body.lang-te h1{font-size:clamp(26px,8vw,34px)}
-  body.lang-te h2{font-size:clamp(22px,6vw,28px)}
-  body.lang-te h3{font-size:clamp(20px,5.5vw,24px)}
-  body.lang-te p,body.lang-te address,body.lang-te figcaption{font-size:16px}
-  body.lang-te .floating-nav a,body.lang-te .lang-toggle{font-size:14px}
-  body.lang-te .eyebrow{font-size:12px}
-  body.lang-te .scroll-button,body.lang-te .gold-button,body.lang-te .sc-enter,body.lang-te button{font-size:14px}
-}
