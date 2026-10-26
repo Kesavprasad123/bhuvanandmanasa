@@ -28,7 +28,7 @@ const EVENTS = [
     title: "Haldi (Groom's)",
     teluguTitle: "హల్దీ వేడుక (వరుడు)",
     subtitle: 'Turmeric showers, cheerful laughter, yellow hues & celebration',
-    image: '/assets/haldi.png',
+    image: '/assets/haldi.jpg',
     time: 'Time to be announced',
     date: 'Date to be announced',
     venue: 'Venue to be announced',
