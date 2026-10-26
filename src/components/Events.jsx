@@ -73,7 +73,7 @@ const EVENTS = [
     teluguTitle: 'కళ్యాణ మహోత్సవం',
     subtitle: 'Two hearts, sacred vows, seven pheras & an eternal journey together',
     image: '/assets/wedding.webp',
-    time: '8:24 PM (Muhurtham)',
+    time: '8:26 PM (Muhurtham)',
     date: '12 December 2026',
     venue: 'SVPC CONVENTIONS',
     color: '#8e3045',

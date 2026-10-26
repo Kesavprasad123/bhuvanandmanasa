@@ -2424,3 +2424,370 @@
   .photo-collage .item-8:hover img {
     transform: scale(1.06) !important;
   }
+
+  /* =========================================================
+   GOLD SCRATCH CARD & ROMANTIC REVEAL
+   ========================================================= */
+
+  .countdown-section.section-paper {
+    background: #fff9f3;
+  }
+
+  .scratch-stage {
+    position: relative;
+  }
+
+  .scratch-stage .eyebrow {
+    color: #9b304a;
+    font-size: 12px;
+    letter-spacing: 5px;
+    margin-bottom: 2px;
+  }
+
+  .scratch-subtitle {
+    font-family: "Great Vibes";
+    font-size: clamp(25px, 3.4vw, 38px);
+    line-height: 1.3;
+    color: #9b304a;
+    opacity: .88;
+    margin: 0;
+  }
+
+  /* --- floating blush flowers & gold floral particles --- */
+  .scratch-decor {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .scratch-decor span {
+    position: absolute;
+    display: block;
+    opacity: .55;
+    animation-name: decorFloat;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    will-change: transform;
+  }
+
+  .scratch-decor .gold {
+    color: #d9a94f;
+    text-shadow: 0 0 10px rgba(226, 186, 106, .55);
+  }
+
+  .scratch-decor .blush {
+    color: #e7a7b1;
+  }
+
+  @keyframes decorFloat {
+    from {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+
+    to {
+      transform: translate3d(7px, -16px, 0) rotate(16deg);
+    }
+  }
+
+  /* --- the card --- */
+  .scratch-wrap {
+    position: relative;
+    width: min(540px, 88%);
+    margin: 32px auto 16px;
+    z-index: 1;
+  }
+
+  .scratch-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 26px;
+    overflow: hidden;
+    background: linear-gradient(150deg, #fdf3dc, #e9cd8d);
+    border: 1px solid rgba(210, 172, 92, .9);
+    box-shadow:
+      0 24px 52px rgba(150, 106, 34, .26),
+      0 0 38px rgba(226, 187, 108, .38),
+      inset 0 1px 0 rgba(255, 250, 232, .75);
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .scratch-card.is-scratching {
+    touch-action: none;
+  }
+
+  /* --- hidden wedding date beneath the foil --- */
+  .scratch-underlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6%;
+    overflow: hidden;
+    text-align: center;
+    background: radial-gradient(125% 115% at 50% 0%, #fffdf8, #fdf1dc 55%, #f8e6c4);
+  }
+
+  .scratch-underlay-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .scratch-underlay::after {
+    content: "";
+    position: absolute;
+    top: -25%;
+    bottom: -25%;
+    left: 0;
+    width: 48%;
+    z-index: 3;
+    opacity: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, .7),
+      rgba(255, 255, 255, 0)
+    );
+  }
+
+  .scratch-names {
+    font-family: "Great Vibes";
+    font-size: clamp(34px, 7.4vw, 56px);
+    line-height: 1.15;
+    color: #9b304a;
+    margin: 0;
+  }
+
+  .scratch-heart {
+    font-size: .52em;
+    vertical-align: middle;
+    margin: 0 .06em;
+  }
+
+  .scratch-date {
+    font-family: "Playfair Display", serif;
+    font-weight: 600;
+    font-size: clamp(17px, 3.3vw, 25px);
+    letter-spacing: 2px;
+    color: #76273a;
+    margin: 10px 0 0;
+  }
+
+  .scratch-time {
+    font-family: "Playfair Display", serif;
+    font-weight: 600;
+    font-size: clamp(13px, 2.4vw, 17px);
+    letter-spacing: 4px;
+    color: #a9761f;
+    margin: 7px 0 0;
+  }
+
+  /* --- gold coating --- */
+  .scratch-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: auto;
+    transition: opacity .85s ease, filter .85s ease;
+  }
+
+  .scratch-card.is-revealed .scratch-canvas {
+    opacity: 0;
+    filter: blur(12px);
+    pointer-events: none;
+  }
+
+  .scratch-card.is-revealed .scratch-underlay-content {
+    animation: revealPulse 1.15s cubic-bezier(.2, .8, .3, 1) both;
+  }
+
+  .scratch-card.is-revealed .scratch-underlay::after {
+    animation: revealShine 1.4s ease-out .12s both;
+  }
+
+  @keyframes revealPulse {
+    0% {
+      transform: scale(.94);
+    }
+
+    45% {
+      transform: scale(1.06);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes revealShine {
+    0% {
+      transform: translateX(-170%) skewX(-12deg);
+      opacity: 0;
+    }
+
+    14% {
+      opacity: .9;
+    }
+
+    100% {
+      transform: translateX(330%) skewX(-12deg);
+      opacity: 0;
+    }
+  }
+
+  /* --- celebration burst --- */
+  .scratch-burst {
+    position: absolute;
+    inset: -16% -8%;
+    z-index: 6;
+    pointer-events: none;
+  }
+
+  .burst-particle {
+    position: absolute;
+    display: block;
+    line-height: 1;
+    opacity: 0;
+    animation-name: burstRise;
+    animation-timing-function: cubic-bezier(.18, .72, .3, 1);
+    animation-fill-mode: both;
+    will-change: transform, opacity;
+  }
+
+  .burst-heart {
+    filter: drop-shadow(0 5px 9px rgba(214, 120, 150, .35));
+  }
+
+  .burst-sparkle {
+    color: #d9a94f;
+    text-shadow: 0 0 12px rgba(230, 190, 110, .85);
+  }
+
+  .burst-petal {
+    color: #e7a7b1;
+    text-shadow: 0 0 8px rgba(231, 167, 177, .5);
+  }
+
+  @keyframes burstRise {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.25) rotate(0deg);
+    }
+
+    14% {
+      opacity: 1;
+    }
+
+    70% {
+      opacity: .92;
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+        scale(var(--scale)) rotate(var(--rot));
+    }
+  }
+
+  /* --- instruction --- */
+  .scratch-hint {
+    margin: 6px 0 0;
+    font-size: 14.5px;
+    font-style: italic;
+    letter-spacing: .4px;
+    color: #9b304a;
+    opacity: .74;
+  }
+
+  /* --- hand-over to the countdown --- */
+  .scratch-stage.is-leaving {
+    opacity: 0;
+    transform: translateY(-22px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+
+  .countdown-stage {
+    animation: stageIn .9s cubic-bezier(.22, .9, .3, 1) both;
+  }
+
+  @keyframes stageIn {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* --- dark theme --- */
+  body.dark-theme .scratch-underlay {
+    background: radial-gradient(125% 115% at 50% 0%, #322830, #261f24 55%, #1b151a);
+  }
+
+  body.dark-theme .scratch-names {
+    color: #f2b4c0;
+  }
+
+  body.dark-theme .scratch-date {
+    color: #f4e4d6;
+  }
+
+  body.dark-theme .scratch-time {
+    color: #e2b96f;
+  }
+
+  body.dark-theme .scratch-stage .eyebrow,
+  body.dark-theme .scratch-subtitle,
+  body.dark-theme .scratch-hint {
+    color: var(--rose-dark);
+  }
+
+  @media(max-width:700px) {
+    .scratch-wrap {
+      width: min(540px, 92%);
+      margin-top: 26px;
+    }
+
+    .scratch-card {
+      border-radius: 20px;
+    }
+
+    .scratch-stage .eyebrow {
+      font-size: 10.5px;
+      letter-spacing: 4px;
+    }
+
+    .scratch-hint {
+      font-size: 12.5px;
+      padding: 0 4%;
+    }
+
+    .scratch-decor span {
+      font-size: 13px !important;
+      opacity: .45;
+    }
+
+    .scratch-decor .side,
+    .scratch-decor .low {
+      display: none;
+    }
+
+    .scratch-burst {
+      inset: -10% -2%;
+    }
+  }
