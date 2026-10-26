@@ -864,9 +864,6 @@
     width: 370px;
     height: 550px;
     border-radius: 28px;
-    overflow: hidden;
-    background-size: cover;
-    background-position: center;
     box-shadow: 0 15px 35px rgba(45, 25, 20, 0.18);
     transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
       opacity 0.65s ease,
@@ -877,6 +874,77 @@
     transform-origin: center center;
     user-select: none;
     -webkit-user-select: none;
+    /* 3D flip support */
+    transform-style: preserve-3d;
+    perspective: 1200px;
+  }
+
+  /* ---- Card Face (shared front & back) ---- */
+  .card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: flat;
+    transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1),
+      opacity 0.25s ease,
+      visibility 0.7s ease;
+  }
+
+  .card-face * {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .card-front {
+    background-size: cover;
+    background-position: center;
+    z-index: 2;
+    transform: rotateY(0deg);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .card-back {
+    transform: rotateY(180deg);
+    z-index: 1;
+    background: #180b12;
+    background: linear-gradient(160deg, #180b12 0%, #2c1620 50%, #180b12 100%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* When flipped */
+  .stage-card.is-flipped .card-front {
+    transform: rotateY(-180deg);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 1;
+    transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1),
+      opacity 0.2s ease 0.15s,
+      visibility 0.7s ease;
+  }
+
+  .stage-card.is-flipped .card-front * {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .stage-card.is-flipped .card-back {
+    transform: rotateY(0deg);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 5;
+    transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1),
+      opacity 0.25s ease 0.15s,
+      visibility 0.7s ease;
   }
 
   /* Center Active Card (Zoomed, in front) */
@@ -990,7 +1058,7 @@
 
   .stage-card-content {
     position: absolute;
-    bottom: 0;
+    bottom: 36px;
     left: 0;
     right: 0;
     z-index: 2;
@@ -1093,6 +1161,238 @@
     opacity: 1;
   }
 
+  /* ---- Flip Trigger Button (front face bottom) ---- */
+  .flip-trigger-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 0;
+    border: none;
+    background: linear-gradient(180deg, rgba(20, 10, 14, 0.0) 0%, rgba(20, 10, 14, 0.85) 30%, rgba(15, 7, 10, 0.98) 100%);
+    color: #ffd875;
+    font-family: "Playfair Display", serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+    border-bottom-left-radius: 28px;
+    border-bottom-right-radius: 28px;
+  }
+
+  .flip-trigger-btn:hover {
+    background: linear-gradient(180deg, rgba(142, 48, 69, 0.0) 0%, rgba(142, 48, 69, 0.85) 30%, rgba(142, 48, 69, 0.98) 100%);
+    color: #fff;
+  }
+
+  .flip-arrow-icon {
+    font-size: 15px;
+  }
+
+  .flip-arrow-text {
+    text-transform: uppercase;
+  }
+
+  .flip-arrow-chevron {
+    font-size: 16px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  .flip-trigger-btn:hover .flip-arrow-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* ---- Card Back Inner Content ---- */
+  .card-back-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 20px;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-back-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(220, 185, 115, 0.25);
+    border-radius: 28px;
+    pointer-events: none;
+  }
+
+  .back-header {
+    text-align: center;
+    width: 100%;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(220, 185, 115, 0.2);
+  }
+
+  .back-event-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 16px;
+    background: rgba(255, 216, 117, 0.12);
+    border: 1px solid rgba(255, 216, 117, 0.3);
+    font-family: "Playfair Display", serif;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    font-weight: 700;
+    color: #ffd875;
+    margin-bottom: 8px;
+  }
+
+  .back-title {
+    font-family: "Great Vibes", cursive;
+    font-size: 42px;
+    color: #fff;
+    margin: 4px 0 6px;
+    line-height: 1.1;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  .back-venue {
+    font-family: "Playfair Display", serif;
+    font-size: 13px;
+    font-style: italic;
+    color: #e5c99d;
+    letter-spacing: 0.5px;
+  }
+
+  /* Map container */
+  .back-map-container {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1.5px solid rgba(220, 185, 115, 0.3);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .back-map-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .back-map-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #a99073;
+    font-family: "Playfair Display", serif;
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  .map-placeholder-icon {
+    font-size: 38px;
+    opacity: 0.7;
+  }
+
+  /* Distance badge */
+  .back-distance {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    background: rgba(255, 216, 117, 0.1);
+    border: 1px solid rgba(255, 216, 117, 0.25);
+    width: max-content;
+  }
+
+  .distance-icon {
+    font-size: 16px;
+  }
+
+  .distance-text {
+    font-family: "Playfair Display", serif;
+    font-size: 13px;
+    color: #f0d9b5;
+    letter-spacing: 0.3px;
+  }
+
+  .distance-text strong {
+    color: #ffd875;
+    font-size: 15px;
+  }
+
+  /* Navigate button */
+  .back-navigate-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 26px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, var(--rose-dark) 0%, #b83d5a 100%);
+    color: #fff;
+    font-family: "Playfair Display", serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 22px rgba(142, 48, 69, 0.5);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    width: 100%;
+    text-align: center;
+  }
+
+  .back-navigate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(142, 48, 69, 0.65);
+    background: linear-gradient(135deg, #b83d5a 0%, var(--rose-dark) 100%);
+  }
+
+  .back-navigate-btn.disabled {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #a99073;
+    cursor: default;
+    box-shadow: none;
+  }
+
+  /* Flip back button */
+  .flip-back-btn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(220, 185, 115, 0.25);
+    color: #ffd875;
+    font-family: "Playfair Display", serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .flip-back-btn:hover {
+    background: rgba(255, 216, 117, 0.15);
+    color: #fff;
+  }
+
   /* Stage Navigation Arrows */
   .stage-nav-btn {
     position: absolute;
@@ -1131,89 +1431,6 @@
     box-shadow: 0 16px 36px rgba(118, 39, 58, 0.4);
   }
 
-  /* Stepper Indicators / Event Dots */
-  .stage-indicators {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-top: 32px;
-    flex-wrap: wrap;
-  }
-
-  .stage-dot {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 16px;
-    border-radius: 24px;
-    border: 1px solid #e1caa7;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(8px);
-    color: var(--ink);
-    font-family: "Playfair Display", serif;
-    font-size: 13px;
-    letter-spacing: 0.5px;
-    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-    cursor: pointer;
-  }
-
-  .stage-dot .dot-index {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--gold);
-  }
-
-  .stage-dot.active {
-    background: var(--rose-dark);
-    border-color: var(--rose-dark);
-    color: #fff;
-    transform: scale(1.06);
-    box-shadow: 0 8px 22px rgba(142, 48, 69, 0.35);
-  }
-
-  .stage-dot.active .dot-index {
-    color: var(--gold-light);
-  }
-
-  .stage-autoplay-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 24px;
-    border: 1px dashed #d1a87b;
-    background: rgba(255, 250, 244, 0.9);
-    color: var(--rose-dark);
-    font-family: "Playfair Display", serif;
-    font-size: 12px;
-    letter-spacing: 1px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-  }
-
-  .stage-autoplay-toggle:hover {
-    background: var(--rose-dark);
-    color: #fff;
-    border-style: solid;
-  }
-
-  .stage-autoplay-toggle.paused {
-    background: rgba(189, 138, 66, 0.15);
-    color: var(--gold);
-    border-color: var(--gold);
-  }
-
-  .stage-hint {
-    font-size: 14px;
-    font-style: italic;
-    color: #8c7a67;
-    margin-top: 16px;
-    opacity: 0.88;
-    letter-spacing: 0.5px;
-  }
-
   /* Responsive Stage Styles */
   @media (max-width: 900px) {
     .events-stage {
@@ -1248,12 +1465,9 @@
       right: 2px;
     }
 
-    .stage-dot .dot-name {
-      display: none;
-    }
-
-    .stage-dot {
-      padding: 6px 12px;
+    .flip-trigger-btn {
+      font-size: 11px;
+      padding: 8px 0;
     }
   }
 
@@ -1329,33 +1543,6 @@
   body.dark-theme .stage-nav-btn:hover {
     background: var(--wine);
     color: #fff;
-  }
-
-  body.dark-theme .stage-dot {
-    background: rgba(36, 31, 34, 0.85);
-    border-color: #654e53;
-    color: var(--ink);
-  }
-
-  body.dark-theme .stage-dot.active {
-    background: var(--wine);
-    border-color: var(--wine);
-    color: #fff;
-  }
-
-  body.dark-theme .stage-autoplay-toggle {
-    background: rgba(36, 31, 34, 0.85);
-    border-color: #8c6543;
-    color: var(--gold-light);
-  }
-
-  body.dark-theme .stage-autoplay-toggle:hover {
-    background: var(--wine);
-    color: #fff;
-  }
-
-  body.dark-theme .stage-hint {
-    color: var(--gold-light);
   }
 
   .feature-section {
