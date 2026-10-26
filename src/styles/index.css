@@ -2495,7 +2495,7 @@
   /* --- the card --- */
   .scratch-wrap {
     position: relative;
-    width: min(540px, 88%);
+    width: min(480px, 84%);
     margin: 32px auto 16px;
     z-index: 1;
   }
@@ -2759,7 +2759,7 @@
 
   @media(max-width:700px) {
     .scratch-wrap {
-      width: min(540px, 92%);
+      width: min(480px, 88%);
       margin-top: 26px;
     }
 
