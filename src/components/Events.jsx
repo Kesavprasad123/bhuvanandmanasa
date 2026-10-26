@@ -1,256 +1,313 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const EVENTS = [
   {
     number: '01',
     title: 'Pelli Koduku',
-    subtitle: 'Groom to be • A traditional beginning filled with blessings',
+    teluguTitle: 'పెళ్ళికొడుకు',
+    subtitle: 'Groom to be • A traditional beginning filled with auspicious blessings',
     image: '/assets/pellikoduku.webp',
     time: '9:00 AM',
     date: 'Date to be announced',
     venue: 'Venue to be announced',
+    color: '#e69500',
   },
   {
     number: '02',
     title: 'Pelli Kuturu',
-    subtitle: 'Bride to be • Mangalasnanam & auspicious rituals',
-    image: '/assets/gallery/A25I9462.jpg',
+    teluguTitle: 'పెళ్ళికూతురు',
+    subtitle: 'Bride to be • Mangalasnanam, floral radiant rites & family affection',
+    image: '/assets/pellikuthuru.jpg',
     time: 'Time to be announced',
     date: 'Date to be announced',
     venue: 'Venue to be announced',
+    color: '#d44368',
   },
   {
     number: '03',
     title: "Haldi (Groom's)",
-    subtitle: 'Turmeric, laughter, yellow hues & family blessings',
+    teluguTitle: "హల్దీ వేడుక (వరుడు)",
+    subtitle: 'Turmeric showers, cheerful laughter, yellow hues & celebration',
     image: '/assets/haldi.png',
     time: 'Time to be announced',
     date: 'Date to be announced',
     venue: 'Venue to be announced',
+    color: '#d99b00',
   },
   {
     number: '04',
     title: "Haldi (Bride's)",
-    subtitle: 'Golden radiance, flowers, music & celebration',
-    image: '/assets/gallery/A25I8942.jpg',
+    teluguTitle: "హల్దీ వేడుక (వధువు)",
+    subtitle: 'Golden sunshine radiance, marigold petals, joy & laughter',
+    image: '/assets/haldi_bride.jpg',
     time: 'Time to be announced',
     date: 'Date to be announced',
     venue: 'Venue to be announced',
+    color: '#e28d00',
   },
   {
     number: '05',
     title: 'Sangeeth',
-    subtitle: 'An evening of beats, dance, celebration & sparkle',
-    image: '/assets/gallery/A25I8862.jpg',
+    teluguTitle: 'సంగీత్ సంబరం',
+    subtitle: 'An enchanting starlit evening of beats, dance, sparkle & harmony',
+    image: '/assets/sangeeth.jpg',
     time: '7:00 PM onwards',
     date: 'Date to be announced',
     venue: 'Venue to be announced',
+    color: '#4954b0',
   },
   {
     number: '06',
     title: 'Mehandi',
-    subtitle: 'Delicate henna swirls, joyous melodies & colours',
+    teluguTitle: 'మెహందీ వేడుక',
+    subtitle: 'Delicate henna swirls, joyous songs & vibrant festive charm',
     image: '/assets/mehendi.webp',
     time: 'Time to be announced',
     date: 'Date to be announced',
     venue: 'Venue to be announced',
+    color: '#3d8253',
   },
   {
     number: '07',
     title: 'Marriage',
-    subtitle: 'Two hearts, two families, one forever union',
+    teluguTitle: 'కళ్యాణ మహోత్సవం',
+    subtitle: 'Two hearts, sacred vows, seven pheras & an eternal journey together',
     image: '/assets/wedding.webp',
     time: '8:24 PM (Muhurtham)',
     date: '12 December 2026',
     venue: 'SVPC CONVENTIONS',
+    color: '#8e3045',
   },
 ];
 
-// Tripled events list for seamless, infinite wrap-around in both directions
-const REPEATED_EVENTS = [...EVENTS, ...EVENTS, ...EVENTS].map((event, index) => ({
-  ...event,
-  uniqueKey: `${event.number}-${index}`,
-  originalIndex: index % EVENTS.length,
-}));
-
 function Events() {
-  const trackRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
-  const [isAutoScrollOn, setIsAutoScrollOn] = useState(true);
-  const pauseUntilRef = useRef(0);
+  const touchStartXRef = useRef(null);
+  const touchEndXRef = useRef(null);
+  const total = EVENTS.length;
 
-  // Initialize track scroll position to middle set for two-way infinite scrolling
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    const setWidth = el.scrollWidth / 3;
-    el.scrollLeft = setWidth;
-  }, []);
-
-  // Continuous auto-scrolling with very minimal speed
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-
-    let animId;
-    // Minimal, tranquil speed: ~0.45px per frame (~27px per second)
-    const SCROLL_SPEED = 0.45;
-
-    const animate = () => {
-      const now = Date.now();
-      const isPaused = isHovered || !isAutoScrollOn || now < pauseUntilRef.current;
-
-      if (!isPaused && el) {
-        el.scrollLeft += SCROLL_SPEED;
-
-        // Seamless infinite loop
-        const oneSetWidth = el.scrollWidth / 3;
-        if (el.scrollLeft >= oneSetWidth * 2) {
-          el.scrollLeft -= oneSetWidth;
-        } else if (el.scrollLeft <= 0) {
-          el.scrollLeft += oneSetWidth;
-        }
-
-        // Determine currently focused card
-        const cardWidth = el.firstElementChild?.clientWidth || 350;
-        const gap = 24;
-        const pitch = cardWidth + gap;
-        const currentIdx = Math.floor((el.scrollLeft + el.clientWidth / 2) / pitch) % EVENTS.length;
-        setActiveIndex(currentIdx);
-      }
-
-      animId = requestAnimationFrame(animate);
-    };
-
-    animId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animId);
-  }, [isHovered, isAutoScrollOn]);
-
-  const pauseTemporarily = (duration = 3500) => {
-    pauseUntilRef.current = Date.now() + duration;
+  const goToNext = () => {
+    setActiveIndex((prev) => (prev + 1) % total);
   };
 
-  const scrollByDirection = (direction) => {
-    const el = trackRef.current;
-    if (!el) return;
-    pauseTemporarily(4000);
-    const scrollAmount = (el.firstElementChild?.clientWidth || 350) + 24;
-    el.scrollBy({
-      left: direction === 'next' ? scrollAmount : -scrollAmount,
-      behavior: 'smooth',
-    });
+  const goToPrev = () => {
+    setActiveIndex((prev) => (prev - 1 + total) % total);
   };
 
-  const scrollToOriginalIndex = (targetIndex) => {
-    const el = trackRef.current;
-    if (!el) return;
-    pauseTemporarily(4000);
+  const goToIndex = (index) => {
+    setActiveIndex(index);
+  };
 
-    const cardWidth = el.firstElementChild?.clientWidth || 350;
-    const gap = 24;
-    const pitch = cardWidth + gap;
-    const oneSetWidth = el.scrollWidth / 3;
+  // Gentle Autoplay Timer
+  useEffect(() => {
+    if (!isAutoPlay || isHovered) return;
 
-    // Scroll to the card in the middle section
-    const targetScroll = oneSetWidth + targetIndex * pitch - (el.clientWidth - cardWidth) / 2;
-    el.scrollTo({
-      left: targetScroll,
-      behavior: 'smooth',
-    });
-    setActiveIndex(targetIndex);
+    const timer = setInterval(() => {
+      goToNext();
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [isAutoPlay, isHovered]);
+
+  // Touch Swipe Handlers for mobile
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchEndXRef.current = null;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartXRef.current === null || touchEndXRef.current === null) return;
+    const diff = touchStartXRef.current - touchEndXRef.current;
+    const minSwipeDistance = 45;
+
+    if (diff > minSwipeDistance) {
+      goToNext();
+    } else if (diff < -minSwipeDistance) {
+      goToPrev();
+    }
+
+    touchStartXRef.current = null;
+    touchEndXRef.current = null;
+  };
+
+  // Keyboard navigation
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowLeft') {
+      goToPrev();
+    } else if (e.key === 'ArrowRight') {
+      goToNext();
+    }
+  };
+
+  // Helper to determine position relative to active card
+  const getCardPositionClass = (index) => {
+    let diff = index - activeIndex;
+    if (diff > total / 2) diff -= total;
+    if (diff < -total / 2) diff += total;
+
+    if (diff === 0) return 'is-active';
+    if (diff === -1) return 'is-prev';
+    if (diff === 1) return 'is-next';
+    if (diff < -1) return 'is-hidden-left';
+    return 'is-hidden-right';
   };
 
   return (
-    <section id="events" className="events-section section-cream">
+    <section
+      id="events"
+      className="events-section section-cream"
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      aria-label="Wedding Events Carousel"
+    >
       <div className="section-inner wide reveal">
         <p className="eyebrow">SAVE THE DATES</p>
         <h2>Wedding Festivities</h2>
         <p className="section-subtitle">
-          Seven beautiful moments leading to a lifetime of togetherness.
+          Seven sacred celebrations leading to a lifetime of togetherness.
         </p>
 
-        <div className="event-carousel-wrapper">
-          {/* Previous Arrow Button */}
+        {/* 3D Stage Container */}
+        <div
+          className="events-stage-wrapper"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Navigation Arrows */}
           <button
             type="button"
-            className="carousel-nav-btn prev"
-            onClick={() => scrollByDirection('prev')}
+            className="stage-nav-btn prev"
+            onClick={goToPrev}
             aria-label="Previous event"
           >
             &#8249;
           </button>
 
-          {/* Continuous Horizontally Scrolling Track */}
-          <div
-            className="event-scroll-track"
-            ref={trackRef}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            onTouchStart={() => pauseTemporarily(5000)}
-            onTouchEnd={() => pauseTemporarily(2000)}
-          >
-            {REPEATED_EVENTS.map((event) => (
-              <article
-                key={event.uniqueKey}
-                className={`event-card ${event.originalIndex === activeIndex ? 'active-card' : ''}`}
-                style={{ '--event-image': `url('${event.image}')` }}
-                onClick={() => scrollToOriginalIndex(event.originalIndex)}
-              >
-                <div className="event-overlay"></div>
-                <div className="event-content">
-                  <span className="event-number">{event.number}</span>
-                  <h3>{event.title}</h3>
-                  <p className="event-subtitle">{event.subtitle}</p>
-                  <div className="event-details">
-                    <span>🕐 <b>{event.time}</b></span>
-                    <span>📅 <b>{event.date}</b></span>
-                    <span>📍 <b>{event.venue}</b></span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {/* Next Arrow Button */}
           <button
             type="button"
-            className="carousel-nav-btn next"
-            onClick={() => scrollByDirection('next')}
+            className="stage-nav-btn next"
+            onClick={goToNext}
             aria-label="Next event"
           >
             &#8250;
           </button>
+
+          {/* 3D Stage: exactly 3 visible (center zoomed, left & right minimized) */}
+          <div className="events-stage">
+            {EVENTS.map((event, index) => {
+              const positionClass = getCardPositionClass(index);
+              const isActive = positionClass === 'is-active';
+              const isPrev = positionClass === 'is-prev';
+              const isNext = positionClass === 'is-next';
+
+              return (
+                <article
+                  key={event.number}
+                  className={`stage-card ${positionClass}`}
+                  style={{ backgroundImage: `url('${event.image}')` }}
+                  onClick={() => {
+                    if (isPrev) goToPrev();
+                    if (isNext) goToNext();
+                  }}
+                  role="button"
+                  tabIndex={isActive ? 0 : -1}
+                  aria-current={isActive ? 'true' : 'false'}
+                  aria-label={`${event.title} - Event ${event.number}`}
+                >
+                  {/* Subtle top & bottom gradients for depth and text legibility */}
+                  <div className="stage-card-overlay"></div>
+
+                  {/* Top Badge: Number + Telugu title */}
+                  <div className="stage-card-top">
+                    <span className="stage-event-badge">
+                      EVENT {event.number} / 07
+                    </span>
+                    <span className="stage-event-telugu">{event.teluguTitle}</span>
+                  </div>
+
+                  {/* Card Main Info */}
+                  <div className="stage-card-content">
+                    <h3 className="stage-card-title">{event.title}</h3>
+                    <p className="stage-card-subtitle">{event.subtitle}</p>
+
+                    <div className="stage-card-meta">
+                      <div className="meta-item">
+                        <span className="meta-icon" aria-hidden="true">🕒</span>
+                        <div className="meta-text">
+                          <small>TIME</small>
+                          <strong>{event.time}</strong>
+                        </div>
+                      </div>
+
+                      <div className="meta-item">
+                        <span className="meta-icon" aria-hidden="true">📅</span>
+                        <div className="meta-text">
+                          <small>DATE</small>
+                          <strong>{event.date}</strong>
+                        </div>
+                      </div>
+
+                      <div className="meta-item venue-meta">
+                        <span className="meta-icon" aria-hidden="true">📍</span>
+                        <div className="meta-text">
+                          <small>VENUE</small>
+                          <strong>{event.venue}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Interactive click-hint for side cards */}
+                  {!isActive && (
+                    <div className="side-card-hint">
+                      <span>{isPrev ? '‹ View' : 'View ›'}</span>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Carousel Dots & Controls */}
-        <div className="carousel-indicators">
+        {/* Carousel Stepper / Indicators */}
+        <div className="stage-indicators">
           {EVENTS.map((event, i) => (
             <button
               key={event.number}
               type="button"
-              className={`carousel-dot ${i === activeIndex ? 'active' : ''}`}
-              onClick={() => scrollToOriginalIndex(i)}
+              className={`stage-dot ${i === activeIndex ? 'active' : ''}`}
+              onClick={() => goToIndex(i)}
               aria-label={`Jump to ${event.title}`}
             >
-              <span className="dot-num">{event.number}</span>
-              <span className="dot-title">{event.title}</span>
+              <span className="dot-index">{event.number}</span>
+              <span className="dot-name">{event.title}</span>
             </button>
           ))}
 
-          {/* Pause / Resume Auto-scroll Toggle */}
+          {/* Autoplay Toggle */}
           <button
             type="button"
-            className={`auto-scroll-toggle ${!isAutoScrollOn ? 'paused' : ''}`}
-            onClick={() => setIsAutoScrollOn((prev) => !prev)}
-            aria-label={isAutoScrollOn ? 'Pause auto-scrolling' : 'Resume auto-scrolling'}
-            title={isAutoScrollOn ? 'Pause auto-scrolling' : 'Resume auto-scrolling'}
+            className={`stage-autoplay-toggle ${!isAutoPlay ? 'paused' : ''}`}
+            onClick={() => setIsAutoPlay((prev) => !prev)}
+            aria-label={isAutoPlay ? 'Pause auto-play' : 'Resume auto-play'}
+            title={isAutoPlay ? 'Pause auto-play' : 'Resume auto-play'}
           >
-            {isAutoScrollOn ? '⏸ Auto-scroll' : '▶ Auto-scroll'}
+            {isAutoPlay ? '⏸ Auto-play' : '▶ Auto-play'}
           </button>
         </div>
 
-        <p className="scroll-hint">‹ Auto-scrolling at gentle speed • Hover or touch anytime to pause ›</p>
+        <p className="stage-hint">
+          ‹ Swipe or click side cards to explore • Hover to pause ›
+        </p>
       </div>
     </section>
   );
