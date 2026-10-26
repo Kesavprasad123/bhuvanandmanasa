@@ -6,7 +6,7 @@ const EVENTS = [
     title: 'Pelli Koduku',
     teluguTitle: 'పెళ్ళికొడుకు',
     subtitle: 'Groom to be • A traditional beginning filled with auspicious blessings',
-    image: '/assets/pellikoduku.webp',
+    image: '/assets/pellikoduku.jpg',
     time: '9:00 AM',
     date: 'Date to be announced',
     venue: 'Venue to be announced',
