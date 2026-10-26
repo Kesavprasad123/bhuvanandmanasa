@@ -28,7 +28,6 @@ const EVENTS = [
     date: '10-12-2026',
     venue: 'Vihari Nivas - Rajamahendravaram',
     color: '#e69500',
-    // ← UPDATE THESE TWO FIELDS WITH YOUR GOOGLE MAPS INFO
     mapUrl: 'https://maps.app.goo.gl/DNF4svxa2FNRN3o27?g_st=iw',
     coordinates: { lat: 17.0253368, lng: 81.7834292 },
   },
@@ -43,7 +42,7 @@ const EVENTS = [
     venue: 'Avinya Banquet & Suits',
     color: '#d44368',
     mapUrl: 'https://maps.app.goo.gl/rdH9ZzYK1vsZ3sDB8?g_st=iw',
-    coordinates: null,
+    coordinates: { lat: 17.0082807, lng: 81.8058498 },
   },
   {
     number: '03',
@@ -69,7 +68,7 @@ const EVENTS = [
     venue: 'Avinya Banquet & Suits',
     color: '#e28d00',
     mapUrl: 'https://maps.app.goo.gl/rdH9ZzYK1vsZ3sDB8?g_st=iw',
-    coordinates: null,
+    coordinates: { lat: 17.0082807, lng: 81.8058498 },
   },
   {
     number: '05',
@@ -82,7 +81,7 @@ const EVENTS = [
     venue: 'Avinya Banquet & Suits',
     color: '#4954b0',
     mapUrl: 'https://maps.app.goo.gl/rdH9ZzYK1vsZ3sDB8?g_st=iw',
-    coordinates: null,
+    coordinates: { lat: 17.0082807, lng: 81.8058498 },
   },
   {
     number: '06',
@@ -95,7 +94,7 @@ const EVENTS = [
     venue: 'Avinya Banquet & Suits',
     color: '#3d8253',
     mapUrl: 'https://maps.app.goo.gl/rdH9ZzYK1vsZ3sDB8?g_st=iw',
-    coordinates: null,
+    coordinates: { lat: 17.0082807, lng: 81.8058498 },
   },
   {
     number: '07',
@@ -108,7 +107,7 @@ const EVENTS = [
     venue: 'SVPC CONVENTIONS',
     color: '#8e3045',
     mapUrl: 'https://maps.app.goo.gl/s6EFpBAJ4UScq46k6?g_st=iw',
-    coordinates: null,
+    coordinates: { lat: 17.0387557, lng: 81.8332866 },
   },
 ];
 
@@ -389,6 +388,14 @@ function Events() {
                             title={`${event.title} location`}
                             className="back-map-iframe"
                             src={`https://maps.google.com/maps?q=${event.coordinates.lat},${event.coordinates.lng}&z=15&output=embed`}
+                            loading="lazy"
+                            allowFullScreen
+                          ></iframe>
+                        ) : event.venue && event.venue !== 'Venue to be announced' ? (
+                          <iframe
+                            title={`${event.title} location`}
+                            className="back-map-iframe"
+                            src={`https://maps.google.com/maps?q=${encodeURIComponent(event.venue)}&z=15&output=embed`}
                             loading="lazy"
                             allowFullScreen
                           ></iframe>
