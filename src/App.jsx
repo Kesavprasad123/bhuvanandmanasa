@@ -1,18 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import FallingFlowers from './components/FallingFlowers';
 import Opening from './components/Opening';
-import MusicToggle from './components/MusicToggle';
-import FloatingNav from './components/FloatingNav';
-import Hero from './components/Hero';
-import Countdown from './components/Countdown';
-import Families from './components/Families';
-import Events from './components/Events';
-import FeatureImage from './components/FeatureImage';
-import Gallery from './components/Gallery';
-import Venue from './components/Venue';
-import FinalSection from './components/FinalSection';
-import Footer from './components/Footer';
+import MainInvitation from './components/MainInvitation';
 import useScrollReveal from './hooks/useScrollReveal';
+
+const WEDDING_SONGS = [
+  '/assets/Raarandoi-veduka-choodham.mp3',
+  '/assets/Alanati Ramachandrudu.mp3',
+  '/assets/kalyanam-vybhogam.mp3',
+  '/assets/marriage.mp3',
+  '/assets/shararat.mp3',
+  '/assets/Shatamanam Bhavati.mp3',
+  '/assets/jaya-mangalam.mp3',
+];
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,16 +20,6 @@ function App() {
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
   const songIndexRef = useRef(Number(localStorage.getItem('weddingSongIndex') || 0));
-
-  const weddingSongs = [
-    '/assets/Raarandoi-veduka-choodham.mp3',
-    '/assets/Alanati Ramachandrudu.mp3',
-    '/assets/kalyanam-vybhogam.mp3',
-    '/assets/marriage.mp3',
-    '/assets/shararat.mp3',
-    '/assets/Shatamanam Bhavati.mp3',
-    '/assets/jaya-mangalam.mp3',
-  ];
 
   // Apply theme
   useEffect(() => {
@@ -65,17 +55,17 @@ function App() {
     try {
       const audio = audioRef.current;
       if (!audio) return;
-      audio.src = weddingSongs[songIndexRef.current];
+      audio.src = WEDDING_SONGS[songIndexRef.current];
       audio.volume = 0.7;
       await audio.play();
       setMusicPlaying(true);
-      songIndexRef.current = (songIndexRef.current + 1) % weddingSongs.length;
+      songIndexRef.current = (songIndexRef.current + 1) % WEDDING_SONGS.length;
       localStorage.setItem('weddingSongIndex', songIndexRef.current);
     } catch (error) {
       setMusicPlaying(false);
       console.warn('Wedding music is unavailable:', error.message);
     }
-  }, [weddingSongs]);
+  }, []);
 
   const stopMusic = useCallback(() => {
     const audio = audioRef.current;
@@ -103,24 +93,17 @@ function App() {
   return (
     <>
       <FallingFlowers />
-      <audio ref={audioRef} loop preload="auto" />
+      <audio ref={audioRef} loop preload="none" />
 
       <Opening isOpen={isOpen} onOpen={handleOpenEnvelope} />
 
       {isOpen && (
-        <main id="site">
-          <MusicToggle playing={musicPlaying} onToggle={toggleMusic} />
-          <FloatingNav isDark={isDark} onToggleTheme={toggleTheme} />
-          <Hero />
-          <Countdown />
-          <Families />
-          <Events />
-          <FeatureImage />
-          <Gallery />
-          <Venue />
-          <FinalSection />
-          <Footer />
-        </main>
+        <MainInvitation
+          musicPlaying={musicPlaying}
+          onToggleMusic={toggleMusic}
+          isDark={isDark}
+          onToggleTheme={toggleTheme}
+        />
       )}
     </>
   );
