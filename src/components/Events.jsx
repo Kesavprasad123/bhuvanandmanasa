@@ -23,7 +23,7 @@ const EVENTS = [
     title: 'Pelli Koduku',
     teluguTitle: 'పెళ్ళికొడుకు',
     subtitle: 'Groom to be • A traditional beginning filled with auspicious blessings',
-    image: '/assets/pellikoduku.webp',
+    image: '/assets/pellikoduku.jpg',
     time: '09:00 AM',
     date: '10-12-2026',
     venue: 'Vihari Nivas - Rajamahendravaram',
