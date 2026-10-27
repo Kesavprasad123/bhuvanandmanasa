@@ -50,7 +50,7 @@ const EVENTS = [
     teluguTitle: "హల్దీ వేడుక (వరుడు)",
     subtitle: 'Turmeric showers, cheerful laughter, yellow hues & celebration',
     image: '/assets/haldi.jpg',
-    time: 'Vihari Nivas - Rajamahendravaram',
+    time: '03:00 PM',
     date: '10-12-2026',
     venue: 'Vihari Nivas - Rajamahendravaram',
     color: '#d99b00',
