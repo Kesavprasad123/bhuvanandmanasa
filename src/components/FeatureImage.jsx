@@ -1,7 +1,14 @@
 function FeatureImage() {
   return (
     <section className="feature-section">
-      <img src="/assets/feature img.png" alt="Bhuvan and Manasa wedding celebration" />
+      <img
+        src="/assets/feature-img.webp"
+        alt="Bhuvan and Manasa wedding celebration"
+        loading="lazy"
+        decoding="async"
+        width="1672"
+        height="941"
+      />
       <div className="feature-overlay"></div>
       <div className="feature-copy reveal">
         <p>THE BEGINNING OF FOREVER</p>

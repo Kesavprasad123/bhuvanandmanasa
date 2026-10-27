@@ -1,12 +1,12 @@
 const GALLERY_IMAGES = [
-  { src: '/assets/gallery/A25I9462.jpg', alt: 'PelliKoduku celebration', className: 'item-1' },
-  { src: '/assets/gallery/A25I8942.jpg', alt: 'Haldi celebration', className: 'item-2' },
-  { src: '/assets/gallery/A25I9111.jpg', alt: 'Mehendi celebration', className: 'item-3' },
-  { src: '/assets/gallery/A25I9163.jpg', alt: 'Wedding celebration', className: 'item-4' },
-  { src: '/assets/gallery/A25I9108.jpg', alt: 'Wedding moment', className: 'item-5' },
-  { src: '/assets/gallery/A25I8862.jpg', alt: 'Wedding moment', className: 'item-6' },
-  { src: '/assets/gallery/A25I8939.jpg', alt: 'Wedding moment', className: 'item-7' },
-  { src: '/assets/gallery/A25I8946.jpg', alt: 'Wedding moment', className: 'item-8' },
+  { src: '/assets/gallery/A25I9462.webp', alt: 'PelliKoduku celebration', className: 'item-1' },
+  { src: '/assets/gallery/A25I8942.webp', alt: 'Haldi celebration', className: 'item-2' },
+  { src: '/assets/gallery/A25I9111.webp', alt: 'Mehendi celebration', className: 'item-3' },
+  { src: '/assets/gallery/A25I9163.webp', alt: 'Wedding celebration', className: 'item-4' },
+  { src: '/assets/gallery/A25I9108.webp', alt: 'Wedding moment', className: 'item-5' },
+  { src: '/assets/gallery/A25I8862.webp', alt: 'Wedding moment', className: 'item-6' },
+  { src: '/assets/gallery/A25I8939.webp', alt: 'Wedding moment', className: 'item-7' },
+  { src: '/assets/gallery/A25I8946.webp', alt: 'Wedding moment', className: 'item-8' },
 ];
 
 function Gallery() {
