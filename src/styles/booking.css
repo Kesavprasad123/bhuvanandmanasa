@@ -383,18 +383,17 @@
   border: none;
   outline: none;
   background: transparent;
-  color: #000000 !important;
+  color: #000000;
   font-family: "Playfair Display", serif;
   font-size: 14.5px;
   letter-spacing: 1px;
-  font-weight: 600;
   cursor: pointer;
 }
 
-.acc-select select option {
+.acc-select select option,
+.acc-field select option {
   color: #000000 !important;
-  background: #ffffff;
-  font-weight: 500;
+  background-color: #ffffff !important;
 }
 
 /* ---------- PIN popup ---------- */
@@ -706,22 +705,20 @@ body.dark-theme .acc-login-input::placeholder {
   opacity: 0.65;
 }
 
-body.dark-theme .acc-room-tile {
+body.dark-theme .acc-room-tile,
+body.dark-theme .acc-select {
   background: #2c262a;
   border-color: #6c5a44;
 }
 
-body.dark-theme .acc-select {
-  background: #fbf7f0;
-  border-color: #dcc7a4;
-}
-
 body.dark-theme .acc-select select {
-  color: #000000 !important;
+  color: var(--ink);
 }
 
-body.dark-theme .acc-select-label {
-  color: var(--sage-dark);
+body.dark-theme .acc-select select option,
+body.dark-theme .acc-field select option {
+  color: #000000 !important;
+  background-color: #ffffff !important;
 }
 
 body.dark-theme .acc-tab:hover {
