@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import FallingFlowers from './components/FallingFlowers';
 import Opening from './components/Opening';
-import MainInvitation from './components/MainInvitation';
 import useScrollReveal from './hooks/useScrollReveal';
+
+const loadMainInvitation = () => import('./components/MainInvitation');
+const MainInvitation = lazy(loadMainInvitation);
 
 const WEDDING_SONGS = [
   '/assets/Raarandoi-veduka-choodham.mp3',
@@ -38,6 +40,13 @@ function App() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.documentElement.style.scrollBehavior = 'auto';
     }
+  }, []);
+
+  // Idle prefetch MainInvitation while user is viewing the envelope
+  useEffect(() => {
+    const idleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 800));
+    const id = idleCallback(() => loadMainInvitation());
+    return () => (window.cancelIdleCallback ? window.cancelIdleCallback(id) : null);
   }, []);
 
   // Initialize scroll reveal after site opens
@@ -98,12 +107,14 @@ function App() {
       <Opening isOpen={isOpen} onOpen={handleOpenEnvelope} />
 
       {isOpen && (
-        <MainInvitation
-          musicPlaying={musicPlaying}
-          onToggleMusic={toggleMusic}
-          isDark={isDark}
-          onToggleTheme={toggleTheme}
-        />
+        <Suspense fallback={null}>
+          <MainInvitation
+            musicPlaying={musicPlaying}
+            onToggleMusic={toggleMusic}
+            isDark={isDark}
+            onToggleTheme={toggleTheme}
+          />
+        </Suspense>
       )}
     </>
   );

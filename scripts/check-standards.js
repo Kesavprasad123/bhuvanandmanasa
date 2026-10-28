@@ -46,17 +46,31 @@ function scanDir(dir) {
 
 scanDir(assetsDir);
 
-// 2. Check index.html for critical preloads and non-blocking font loading
-const indexHtmlPath = path.join(projectRoot, 'index.html');
-if (fs.existsSync(indexHtmlPath)) {
-  const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
-  if (!indexHtml.includes('rel="preload"') || !indexHtml.includes('Envelope1.webp')) {
-    console.warn('⚠️  index.html is missing preload link for /assets/Envelope1.webp');
-  }
-  if (indexHtml.includes('<link href="https://fonts.googleapis.com') && !indexHtml.includes('display=swap')) {
-    console.error('❌ RENDER-BLOCKING FONTS: Google Fonts link in index.html is missing display=swap.');
-    console.error('   👉 Add display=swap to the Google Fonts URL query parameters.\n');
-    hasErrors = true;
+// 2. Check index.html and accommodation/index.html for critical preloads and non-blocking font loading
+const htmlFiles = [
+  { path: path.join(projectRoot, 'index.html'), isMain: true },
+  { path: path.join(projectRoot, 'accommodation', 'index.html'), isMain: false },
+];
+
+for (const htmlFile of htmlFiles) {
+  if (fs.existsSync(htmlFile.path)) {
+    const htmlContent = fs.readFileSync(htmlFile.path, 'utf8');
+    const relHtml = path.relative(projectRoot, htmlFile.path);
+
+    if (htmlFile.isMain && (!htmlContent.includes('rel="preload"') || !htmlContent.includes('Envelope1.webp'))) {
+      console.warn(`⚠️  ${relHtml} is missing preload link for /assets/Envelope1.webp`);
+    }
+    if (htmlContent.includes('<link href="https://fonts.googleapis.com') && !htmlContent.includes('display=swap')) {
+      console.error(`❌ RENDER-BLOCKING FONTS: Google Fonts link in ${relHtml} is missing display=swap.`);
+      console.error('   👉 Add display=swap to the Google Fonts URL query parameters.\n');
+      hasErrors = true;
+    }
+    for (const ext of DISALLOWED_IMAGE_EXTENSIONS) {
+      if (htmlContent.includes(ext)) {
+        console.error(`❌ DISALLOWED IMAGE REFERENCE: ${relHtml} references "${ext}". Use WebP instead.\n`);
+        hasErrors = true;
+      }
+    }
   }
 }
 
@@ -69,7 +83,7 @@ if (fs.existsSync(appJsxPath)) {
     console.error('   👉 Global standard requires preload="none" to prevent high mobile data usage before user interaction.\n');
     hasErrors = true;
   }
-  if (!appJsx.includes('lazy(') && !appJsx.includes('MainInvitation')) {
+  if (!appJsx.includes('lazy(') || !appJsx.includes('MainInvitation')) {
     console.error('❌ CODE SPLITTING: Main invitation content is not lazy loaded.');
     console.error('   👉 Global standard requires lazy loading MainInvitation with idle prefetching.\n');
     hasErrors = true;
