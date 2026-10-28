@@ -24,14 +24,14 @@ export default defineConfig({
   base: '/',
   build: {
     outDir: 'dist',
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-        accommodation: resolve(__dirname, 'accommodation/index.html'),
     target: 'es2020',
     cssCodeSplit: true,
     minify: 'esbuild',
     rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        accommodation: resolve(__dirname, 'accommodation/index.html'),
+      },
       output: {
         manualChunks: {
           'vendor-react': ['react', 'react-dom'],
