@@ -11,7 +11,7 @@ import Accommodation from './components/Accommodation';
 const path = window.location.pathname
   .replace(/\/index\.html$/i, '')
   .replace(/\/+$/, '') || '/';
-const Root = path === '/accommodation' ? Accommodation : App;
+const Root = path.toLowerCase().startsWith('/accommodation') ? Accommodation : App;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

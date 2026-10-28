@@ -395,7 +395,7 @@ export function BookingFormDialog({ open, mode, booking, property, bookings, onC
  * Small confirmation popup (used before cancelling a booking).
  * `onConfirm` may return a promise; errors are surfaced inside the popup.
  */
-export function ConfirmDialog({ open, title, message, confirmLabel, onConfirm, onClose }) {
+export function ConfirmDialog({ open, title, message, confirmLabel, cancelLabel = 'Cancel', onConfirm, onClose }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const onCloseRef = useRef(onClose);
@@ -460,7 +460,7 @@ export function ConfirmDialog({ open, title, message, confirmLabel, onConfirm, o
             {busy ? 'Working…' : confirmLabel}
           </button>
           <button className="acc-ghost-button" type="button" onClick={onClose} disabled={busy}>
-            Keep booking
+            {cancelLabel}
           </button>
         </div>
       </div>

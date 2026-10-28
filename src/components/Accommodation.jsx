@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { PROPERTIES, getProperty } from '../data/accommodation';
-import { bookingConfigured, fetchAvailability, logoutHost, restoreHostSession } from '../data/bookingStore';
+import {
+  bookingConfigured,
+  fetchAvailability,
+  logoutHost,
+  restoreHostSession,
+  subscribeToDatabaseChanges,
+} from '../data/bookingStore';
 import { HostLoginDialog, RoomStatusLight } from './BookingControls';
 import HostDashboard from './HostDashboard';
 import useScrollReveal from '../hooks/useScrollReveal';
@@ -296,19 +302,20 @@ function Accommodation() {
     }
   }, []);
 
-  // Load counts on mount; poll so a host change on one device shows up on
-  // every other device within a few seconds.
+  // Load counts on mount; sync via broadcast + storage events + visibility check
   useEffect(() => {
-    if (!bookingConfigured) return undefined;
-
     loadAvailability();
-    const timer = setInterval(loadAvailability, 20000);
+    const unsub = subscribeToDatabaseChanges(() => {
+      loadAvailability();
+    });
+    const timer = setInterval(loadAvailability, 15000);
     const onVisibility = () => {
       if (document.visibilityState === 'visible') loadAvailability();
     };
     document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
+      unsub();
       clearInterval(timer);
       document.removeEventListener('visibilitychange', onVisibility);
     };

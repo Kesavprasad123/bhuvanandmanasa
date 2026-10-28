@@ -6,6 +6,7 @@ import {
   fetchBookings,
   isSessionExpired,
   setBookingStatus,
+  subscribeToDatabaseChanges,
   unblockRoom,
   updateBooking,
 } from '../data/bookingStore';
@@ -72,14 +73,20 @@ function HostDashboard({
     await Promise.all([loadBookings(), onAvailabilityRefresh()]);
   }, [loadBookings, onAvailabilityRefresh]);
 
-  // Load bookings on open, then keep them in sync with other devices.
+  // Load bookings on open, then keep them in sync with other devices and tabs.
   useEffect(() => {
     loadBookings();
+    const unsub = subscribeToDatabaseChanges(() => {
+      refreshAll();
+    });
     const timer = setInterval(() => {
       if (document.visibilityState === 'visible') loadBookings();
-    }, 20000);
-    return () => clearInterval(timer);
-  }, [loadBookings]);
+    }, 15000);
+    return () => {
+      unsub();
+      clearInterval(timer);
+    };
+  }, [loadBookings, refreshAll]);
 
   const counts = useMemo(() => {
     const total = property.rooms.length;
@@ -175,6 +182,23 @@ function HostDashboard({
       setActionError((error && error.message) || 'Could not unblock the room.');
     } finally {
       setBusyRoom(null);
+    }
+  };
+
+  const handleUnblockBooking = async (booking) => {
+    setBusyId(booking.id);
+    setActionError('');
+    try {
+      await setBookingStatus(booking.id, 'cancelled');
+      await refreshAll();
+    } catch (error) {
+      if (isSessionExpired(error)) {
+        onSessionExpired();
+        return;
+      }
+      setActionError((error && error.message) || 'Could not unblock the booking.');
+    } finally {
+      setBusyId(null);
     }
   };
 
@@ -417,14 +441,12 @@ function HostDashboard({
                           {booking.status === 'active' ? (
                             <button
                               type="button"
-                              className="acc-action-btn is-danger"
+                              className="acc-action-btn is-unblock"
                               disabled={busyId === booking.id}
-                              onClick={() => {
-                                setActionError('');
-                                setDialog({ type: 'confirm', booking });
-                              }}
+                              onClick={() => handleUnblockBooking(booking)}
+                              title={`Unblock room ${booking.room} — marks it Available`}
                             >
-                              Cancel
+                              {busyId === booking.id ? 'Unblocking…' : 'Unblocked'}
                             </button>
                           ) : (
                             <button
@@ -432,6 +454,7 @@ function HostDashboard({
                               className="acc-action-btn is-success"
                               disabled={busyId === booking.id}
                               onClick={() => handleRestore(booking)}
+                              title="Restore this booking"
                             >
                               {busyId === booking.id ? 'Restoring…' : 'Restore'}
                             </button>
@@ -444,6 +467,7 @@ function HostDashboard({
                               setActionError('');
                               setDialog({ type: 'delete', booking });
                             }}
+                            title="Delete this booking permanently"
                           >
                             Delete
                           </button>
@@ -469,17 +493,12 @@ function HostDashboard({
       />
 
       <ConfirmDialog
-        open={Boolean(dialog && (dialog.type === 'confirm' || dialog.type === 'delete'))}
-        title={dialog && dialog.type === 'delete' ? 'Are you sure you want to delete this booking?' : 'Cancel this booking?'}
-        message={
-          dialog
-            ? dialog.type === 'delete'
-              ? `This permanently removes the booking for Room ${dialog.booking.room} (${dialog.booking.guest_name}) at ${property.name}. This cannot be undone.`
-              : `Room ${dialog.booking.room} at ${property.name} will become available again for these dates. You can restore the booking later.`
-            : ''
-        }
-        confirmLabel={dialog && dialog.type === 'delete' ? 'Delete booking' : 'Cancel booking'}
-        onConfirm={dialog && dialog.type === 'delete' ? confirmDelete : confirmCancel}
+        open={Boolean(dialog && dialog.type === 'delete')}
+        title="Delete Booking"
+        message="Are you sure you want to delete this booking?"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={confirmDelete}
         onClose={() => setDialog(null)}
       />
     </section>
