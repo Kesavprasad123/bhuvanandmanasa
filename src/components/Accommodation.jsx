@@ -180,19 +180,22 @@ function StayArt({ variant, uid }) {
 
 /** Total / booked / available summary chips (no private data). */
 function SummaryChips({ counts }) {
+  const total = counts.total ?? 8;
+  const booked = counts.booked ?? 0;
+  const available = counts.available ?? (total - booked);
   return (
     <ul className="acc-chips">
       <li className="acc-chip">
         <span className="acc-chip-label">Total Rooms</span>
-        <strong>{counts.total}</strong>
+        <strong>{total}</strong>
       </li>
       <li className="acc-chip is-booked">
         <span className="acc-chip-label">Booked</span>
-        <strong>{counts.booked === null ? '—' : counts.booked}</strong>
+        <strong>{booked}</strong>
       </li>
       <li className="acc-chip is-free">
         <span className="acc-chip-label">Available</span>
-        <strong>{counts.available === null ? '—' : counts.available}</strong>
+        <strong>{available}</strong>
       </li>
     </ul>
   );
@@ -336,7 +339,7 @@ function Accommodation() {
   const countsFor = useCallback(
     (property) => {
       const total = property.rooms.length;
-      if (availabilityState !== 'ready') return { total, booked: null, available: null };
+      if (!availability) return { total, booked: 0, available: total };
       const map = availability[property.id] || {};
       const booked = property.rooms.filter((room) => map[room]).length;
       return { total, booked, available: total - booked };
@@ -398,7 +401,7 @@ function Accommodation() {
   return (
     <div className="acc-page">
       <header className="acc-topbar">
-        <a className="acc-home-link" href="/">
+        <a className="acc-home-link" href="/?opened=true#home">
           ← Invitation
         </a>
         <div className="acc-topbar-actions">
@@ -470,11 +473,11 @@ function Accommodation() {
                           <em>Total Rooms</em>
                         </span>
                         <span className="acc-stat is-booked">
-                          <strong>{counts.booked === null ? '—' : counts.booked}</strong>
+                          <strong>{counts.booked ?? 0}</strong>
                           <em>Booked</em>
                         </span>
                         <span className="acc-stat is-free">
-                          <strong>{counts.available === null ? '—' : counts.available}</strong>
+                          <strong>{counts.available ?? counts.total}</strong>
                           <em>Available</em>
                         </span>
                       </span>
@@ -568,7 +571,7 @@ function Accommodation() {
       <footer className="acc-footer">
         <Ornament />
         <p>Bhuvan &amp; Manasa · 12 December 2026</p>
-        <a className="acc-footer-link" href="/">
+        <a className="acc-footer-link" href="/?opened=true#home">
           ← Back to the wedding invitation
         </a>
       </footer>

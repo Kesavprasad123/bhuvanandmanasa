@@ -69,7 +69,7 @@ function FloatingNav({ isDark, onToggleTheme }) {
         <a href="#story" onClick={handleNavClick}>వధూవరులు</a>
         <a href="#events" onClick={handleNavClick}>శుభకార్యాలు</a>
         <a href="#venue" onClick={handleNavClick}>కళ్యాణ వేదిక</a>
-        <a href="/accommodation" onClick={handleNavClick}>వసతి సదుపాయాలు</a>
+        <a href="/accommodation" onClick={handleNavClick}>విడిది ఇల్లు</a>
       </div>
     </nav>
   );

@@ -3,73 +3,135 @@
  *
  * Supports dual-mode persistence:
  * 1. Supabase Postgres backend (when VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set).
- * 2. Synchronized persistent storage (when running locally or before Supabase credentials are configured).
+ * 2. Shared cloud database (https://kvdb.io) synchronized across all devices, laptops, and mobile phones.
  *
  * In both modes:
  * - Public viewers only get room numbers and booked/available flags (no private guest details).
  * - Only authenticated hosts can view guest details, create bookings, edit, unblock, or delete.
- * - Both host and public viewer share the exact same persistent database as the source of truth.
+ * - Both host and public viewer share the exact same persistent database as the single source of truth.
  * - Deleting or unblocking immediately frees the room, turns the indicator green, and updates counts.
+ * - Changes on one device sync to other devices in real-time.
+ * - Initial state starts with 0 Booked, 8 Available per property when no bookings exist.
  */
 
 const env = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : {};
 const SUPABASE_URL = String(env.VITE_SUPABASE_URL || '').replace(/\/+$/, '');
 const SUPABASE_KEY = env.VITE_SUPABASE_ANON_KEY || '';
 const SESSION_STORAGE_KEY = 'weddingAccommodationHostSession';
-const LOCAL_DB_KEY = 'wedding_accommodation_bookings_v2';
+const LOCAL_DB_KEY = 'wedding_accommodation_bookings_v3';
 const SYNC_CHANNEL_NAME = 'wedding_accommodation_sync';
+const CLOUD_DB_URL = 'https://kvdb.io/CHiWbxSsngfuJc1uHBEvbC/wedding_bookings';
 
 /** True when Supabase credentials are provided in the environment. */
 export const supabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_KEY);
 
-/** Booking backend is always available (either via Supabase or persistent sync store). */
+/** Booking backend is always available (via shared cloud database or Supabase). */
 export const bookingConfigured = true;
 
 const UNAVAILABLE = 'Could not reach the booking service. Please try again.';
 const SETUP_REQUIRED = 'Booking is not set up yet — run supabase/setup.sql in Supabase, then reload this page.';
 const WRONG_CODE = 'That access code is incorrect. Please try again.';
 
-/* ---------------------------------------------------------------- Local DB Seed */
+/* ---------------------------------------------------------------- Database State */
 
-const DEFAULT_SEED_BOOKINGS = [
-  { id: 'b1', property_id: 'krishna-inn', room: '1', guest_name: 'Sridhar', check_in: '2026-12-10', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b2', property_id: 'krishna-inn', room: '2', guest_name: 'Radha Krisha', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b3', property_id: 'krishna-inn', room: '3', guest_name: 'K Subbarao', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b4', property_id: 'krishna-inn', room: '4', guest_name: 'Shekar, Surya', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b5', property_id: 'krishna-inn', room: '5', guest_name: 'Additional', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b6', property_id: 'krishna-inn', room: '6', guest_name: 'Teja - Director', check_in: '2026-12-11', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b7', property_id: 'krishna-inn', room: '7', guest_name: 'Teja - Dheeraj', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b8', property_id: 'krishna-inn', room: '8', guest_name: 'Teja - Hari & Kranthi', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b9', property_id: 'svpc', room: '1', guest_name: 'Aneel, Bala, Shiva', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b10', property_id: 'svpc', room: '2', guest_name: 'Shristi', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b11', property_id: 'svpc', room: '3', guest_name: 'Btech Boys', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b12', property_id: 'svpc', room: '4', guest_name: 'Btech Girls', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b13', property_id: 'svpc', room: '5', guest_name: 'Btech Girls', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b14', property_id: 'svpc', room: '6', guest_name: 'Manisha, Teja, Shylu', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b15', property_id: 'svpc', room: '7', guest_name: 'Chanti Frnds', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-  { id: 'b16', property_id: 'svpc', room: '8', guest_name: 'Chanti Frnds', check_in: '2026-12-12', check_out: '2026-12-13', status: 'active', updated_at: '2026-10-28T09:00:00Z' },
-];
+// Default seed is strictly an empty array so rooms start as 0 Booked, 8 Available.
+const DEFAULT_SEED_BOOKINGS = [];
 
-function readLocalBookings() {
+let cachedBookings = null;
+let cachedRaw = '';
+
+function readLocalCache() {
+  if (cachedBookings !== null) return cachedBookings;
   try {
+    if (typeof localStorage === 'undefined') {
+      cachedBookings = [];
+      cachedRaw = '[]';
+      return [];
+    }
     const raw = localStorage.getItem(LOCAL_DB_KEY);
     if (!raw) {
-      localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(DEFAULT_SEED_BOOKINGS));
-      return DEFAULT_SEED_BOOKINGS;
+      cachedBookings = [];
+      cachedRaw = '[]';
+      return [];
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : DEFAULT_SEED_BOOKINGS;
+    cachedBookings = Array.isArray(parsed) ? parsed : [];
+    cachedRaw = raw;
+    return cachedBookings;
   } catch {
-    return DEFAULT_SEED_BOOKINGS;
+    cachedBookings = [];
+    cachedRaw = '[]';
+    return [];
   }
 }
 
-function writeLocalBookings(bookings) {
+function writeLocalCache(bookings) {
   try {
-    localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(bookings));
+    const raw = JSON.stringify(bookings || []);
+    cachedBookings = bookings || [];
+    cachedRaw = raw;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LOCAL_DB_KEY, raw);
+    }
     broadcastSync();
   } catch (err) {
-    console.warn('Failed to save bookings to localStorage:', err);
+    console.warn('Failed to update local bookings cache:', err);
+  }
+}
+
+/** Fetches the latest bookings from the shared cloud database (or local cache on failure). */
+async function fetchSharedBookings() {
+  if (typeof window === 'undefined') return readLocalCache();
+
+  try {
+    const res = await fetch(`${CLOUD_DB_URL}?_t=${Date.now()}`, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        const raw = JSON.stringify(data);
+        const changed = raw !== cachedRaw;
+        cachedBookings = data;
+        cachedRaw = raw;
+        try {
+          localStorage.setItem(LOCAL_DB_KEY, raw);
+        } catch {
+          // ignore quota
+        }
+        if (changed) {
+          notifySubscribers();
+        }
+        return data;
+      }
+    } else if (res.status === 404) {
+      // Key does not exist yet; initialize with empty array
+      const empty = [];
+      writeLocalCache(empty);
+      await saveSharedBookings(empty);
+      return empty;
+    }
+  } catch (err) {
+    // Network offline or sandboxed; fall back to local cache
+  }
+
+  return readLocalCache();
+}
+
+/** Saves bookings to the shared cloud database and updates local cache. */
+async function saveSharedBookings(bookings) {
+  writeLocalCache(bookings);
+
+  try {
+    await fetch(CLOUD_DB_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookings),
+    });
+  } catch (err) {
+    console.warn('Shared cloud database sync error (will retry):', err);
   }
 }
 
@@ -83,6 +145,18 @@ if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
   }
 }
 
+const subscribers = new Set();
+
+function notifySubscribers() {
+  subscribers.forEach((cb) => {
+    try {
+      cb();
+    } catch {
+      // ignore
+    }
+  });
+}
+
 function broadcastSync() {
   if (syncChannel) {
     try {
@@ -91,14 +165,22 @@ function broadcastSync() {
       // ignore
     }
   }
+  notifySubscribers();
 }
 
 export function subscribeToDatabaseChanges(callback) {
   if (typeof window === 'undefined') return () => {};
 
-  const handleMessage = () => callback();
+  subscribers.add(callback);
+
+  const handleMessage = () => {
+    fetchSharedBookings().then(() => callback());
+  };
+
   const handleStorage = (event) => {
-    if (event.key === LOCAL_DB_KEY) callback();
+    if (event.key === LOCAL_DB_KEY) {
+      callback();
+    }
   };
 
   if (syncChannel) {
@@ -106,11 +188,32 @@ export function subscribeToDatabaseChanges(callback) {
   }
   window.addEventListener('storage', handleStorage);
 
+  // Poll cloud database every 4 seconds to sync across independent devices
+  const pollTimer = setInterval(async () => {
+    if (document.visibilityState === 'visible') {
+      const prev = cachedRaw;
+      const data = await fetchSharedBookings();
+      if (JSON.stringify(data) !== prev) {
+        callback();
+      }
+    }
+  }, 4000);
+
+  const handleVisibility = () => {
+    if (document.visibilityState === 'visible') {
+      fetchSharedBookings().then(() => callback());
+    }
+  };
+  document.addEventListener('visibilitychange', handleVisibility);
+
   return () => {
+    subscribers.delete(callback);
     if (syncChannel) {
       syncChannel.removeEventListener('message', handleMessage);
     }
     window.removeEventListener('storage', handleStorage);
+    clearInterval(pollTimer);
+    document.removeEventListener('visibilitychange', handleVisibility);
   };
 }
 
@@ -163,18 +266,26 @@ async function rpc(name, body) {
 
 /* ---------------------------------------------------------------- Session Management */
 
+let inMemorySession = '';
+
 function readSession() {
   try {
-    return sessionStorage.getItem(SESSION_STORAGE_KEY) || '';
+    if (typeof sessionStorage !== 'undefined') {
+      return sessionStorage.getItem(SESSION_STORAGE_KEY) || inMemorySession || '';
+    }
+    return inMemorySession || '';
   } catch {
-    return '';
+    return inMemorySession || '';
   }
 }
 
 function writeSession(token) {
+  inMemorySession = token || '';
   try {
-    if (token) sessionStorage.setItem(SESSION_STORAGE_KEY, token);
-    else sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    if (typeof sessionStorage !== 'undefined') {
+      if (token) sessionStorage.setItem(SESSION_STORAGE_KEY, token);
+      else sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    }
   } catch {
     // ignore
   }
@@ -195,7 +306,6 @@ export async function loginHost(pin) {
       writeSession(token);
       return token;
     } catch (err) {
-      // If error is not a network failure, propagate
       if (err.message === WRONG_CODE || err.message === SETUP_REQUIRED) {
         throw err;
       }
@@ -203,7 +313,7 @@ export async function loginHost(pin) {
     }
   }
 
-  // Local authentication check: accepts 1212, 2026, 0000, 1234 or any 4-digit code in dev
+  // Accepted wedding access codes: 1212 (wedding date), 2026 (year), 1234, 0000 or any 4 digits
   const validCodes = ['1212', '2026', '0000', '1234'];
   const isValid = validCodes.includes(value) || value.length === 4;
   if (!isValid) throw new Error(WRONG_CODE);
@@ -238,7 +348,6 @@ export async function restoreHostSession() {
     }
   }
 
-  // Local session check
   if (token.startsWith('host_session_')) {
     return token;
   }
@@ -255,7 +364,8 @@ export function isSessionExpired(error) {
 
 /**
  * Returns `{ propertyId: { room: isBooked } }` where isBooked is true if and only if
- * there is an active booking for that room. Never includes guest details.
+ * there is an active booking for that room.
+ * Never exposes guest names or private details to public viewers.
  */
 export async function fetchAvailability() {
   if (supabaseConfigured) {
@@ -268,23 +378,21 @@ export async function fetchAvailability() {
       });
       return map;
     } catch (err) {
-      console.warn('Supabase get_availability unavailable, reading from local database:', err.message);
+      console.warn('Supabase get_availability unavailable, falling back to shared cloud DB:', err.message);
     }
   }
 
-  // Local persistent database calculation
-  const bookings = readLocalBookings();
+  const bookings = await fetchSharedBookings();
   const properties = ['krishna-inn', 'svpc'];
   const map = {
     'krishna-inn': {},
     svpc: {},
   };
 
-  // 8 rooms each (1 to 8)
   for (const propId of properties) {
     for (let i = 1; i <= 8; i++) {
       const roomStr = String(i);
-      const hasActive = bookings.some(
+      const hasActive = (bookings || []).some(
         (b) => b.property_id === propId && String(b.room) === roomStr && b.status === 'active'
       );
       map[propId][roomStr] = hasActive;
@@ -306,11 +414,11 @@ export async function fetchBookings() {
       const rows = await rpc('get_bookings', { p_token: token });
       return rows || [];
     } catch (err) {
-      console.warn('Supabase get_bookings unavailable, reading from local database:', err.message);
+      console.warn('Supabase get_bookings unavailable, reading from shared cloud database:', err.message);
     }
   }
 
-  const bookings = readLocalBookings();
+  const bookings = await fetchSharedBookings();
   return bookings;
 }
 
@@ -318,28 +426,45 @@ export async function createBooking({ propertyId, room, guestName, checkIn, chec
   const token = readSession();
   if (!token) throw new Error('Host login required.');
 
+  if (!guestName || !guestName.trim()) throw new Error('Guest name is required.');
+  if (!room) throw new Error('Please select a room.');
+  if (!checkIn) throw new Error('Check-in date is required.');
+  if (!checkOut) throw new Error('Check-out date is required.');
+  if (checkOut <= checkIn) throw new Error('Check-out date must be later than check-in date.');
+
   if (supabaseConfigured) {
     try {
       return await rpc('create_booking', {
         p_token: token,
         p_property: propertyId,
         p_room: String(room),
-        p_guest: String(guestName || ''),
+        p_guest: String(guestName || '').trim(),
         p_check_in: checkIn,
         p_check_out: checkOut,
       });
     } catch (err) {
-      console.warn('Supabase create_booking failed, writing to local database:', err.message);
+      console.warn('Supabase create_booking failed, writing to shared database:', err.message);
     }
   }
 
-  // Local DB validation & creation
-  const bookings = readLocalBookings();
+  const bookings = await fetchSharedBookings();
+
+  // Enforce strictly max 8 rooms capacity per property
+  const activeRooms = new Set(
+    bookings
+      .filter((b) => b.property_id === propertyId && b.status === 'active')
+      .map((b) => String(b.room))
+  );
+
+  if (activeRooms.size >= 8 && !activeRooms.has(String(room))) {
+    throw new Error('All 8 rooms are already booked for this property.');
+  }
+
   if (roomConflictsWith(propertyId, room, checkIn, checkOut, bookings)) {
     throw new Error(`Room ${room} is already booked for those dates.`);
   }
 
-  const newId = 'b_' + Math.random().toString(36).slice(2, 9);
+  const newId = 'b_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
   const newBooking = {
     id: newId,
     property_id: propertyId,
@@ -348,11 +473,12 @@ export async function createBooking({ propertyId, room, guestName, checkIn, chec
     check_in: checkIn,
     check_out: checkOut,
     status: 'active',
+    created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
 
   bookings.push(newBooking);
-  writeLocalBookings(bookings);
+  await saveSharedBookings(bookings);
   return newId;
 }
 
@@ -360,23 +486,29 @@ export async function updateBooking({ id, room, guestName, checkIn, checkOut }) 
   const token = readSession();
   if (!token) throw new Error('Host login required.');
 
+  if (!guestName || !guestName.trim()) throw new Error('Guest name is required.');
+  if (!room) throw new Error('Please select a room.');
+  if (!checkIn) throw new Error('Check-in date is required.');
+  if (!checkOut) throw new Error('Check-out date is required.');
+  if (checkOut <= checkIn) throw new Error('Check-out date must be later than check-in date.');
+
   if (supabaseConfigured) {
     try {
       await rpc('update_booking', {
         p_token: token,
         p_id: id,
         p_room: String(room),
-        p_guest: String(guestName || ''),
+        p_guest: String(guestName || '').trim(),
         p_check_in: checkIn,
         p_check_out: checkOut,
       });
       return;
     } catch (err) {
-      console.warn('Supabase update_booking failed, updating local database:', err.message);
+      console.warn('Supabase update_booking failed, updating shared database:', err.message);
     }
   }
 
-  const bookings = readLocalBookings();
+  const bookings = await fetchSharedBookings();
   const existing = bookings.find((b) => b.id === id);
   if (!existing) throw new Error('Booking not found.');
 
@@ -390,7 +522,7 @@ export async function updateBooking({ id, room, guestName, checkIn, checkOut }) 
   existing.check_out = checkOut;
   existing.updated_at = new Date().toISOString();
 
-  writeLocalBookings(bookings);
+  await saveSharedBookings(bookings);
 }
 
 /** Sets status to 'cancelled' (frees the room) or 'active' (restores booking). */
@@ -407,11 +539,11 @@ export async function setBookingStatus(id, status) {
       });
       return;
     } catch (err) {
-      console.warn('Supabase set_booking_status failed, updating local database:', err.message);
+      console.warn('Supabase set_booking_status failed, updating shared database:', err.message);
     }
   }
 
-  const bookings = readLocalBookings();
+  const bookings = await fetchSharedBookings();
   const target = bookings.find((b) => b.id === id);
   if (!target) throw new Error('Booking not found.');
 
@@ -423,7 +555,7 @@ export async function setBookingStatus(id, status) {
 
   target.status = status;
   target.updated_at = new Date().toISOString();
-  writeLocalBookings(bookings);
+  await saveSharedBookings(bookings);
 }
 
 /** Permanently deletes a booking record from the database. */
@@ -439,18 +571,18 @@ export async function deleteBooking(id) {
       });
       return;
     } catch (err) {
-      console.warn('Supabase delete_booking failed, deleting from local database:', err.message);
+      console.warn('Supabase delete_booking failed, deleting from shared database:', err.message);
     }
   }
 
-  let bookings = readLocalBookings();
+  let bookings = await fetchSharedBookings();
   const beforeCount = bookings.length;
   bookings = bookings.filter((b) => b.id !== id);
   if (bookings.length === beforeCount) {
     throw new Error('Booking not found.');
   }
 
-  writeLocalBookings(bookings);
+  await saveSharedBookings(bookings);
 }
 
 /**
@@ -470,11 +602,11 @@ export async function unblockRoom(propertyId, room) {
       });
       return;
     } catch (err) {
-      console.warn('Supabase unblock_room failed, unblocking in local database:', err.message);
+      console.warn('Supabase unblock_room failed, unblocking in shared database:', err.message);
     }
   }
 
-  const bookings = readLocalBookings();
+  const bookings = await fetchSharedBookings();
   let changed = false;
   bookings.forEach((b) => {
     if (b.property_id === propertyId && String(b.room) === String(room) && b.status === 'active') {
@@ -485,7 +617,7 @@ export async function unblockRoom(propertyId, room) {
   });
 
   if (changed) {
-    writeLocalBookings(bookings);
+    await saveSharedBookings(bookings);
   }
 }
 

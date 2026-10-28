@@ -76,7 +76,7 @@ function Opening({ isOpen: siteOpen, onOpen }) {
     }, 2500);
   }, [envelopeOpen, onOpen, createEnvelopeBlast]);
 
-  if (hidden) return null;
+  if (hidden || siteOpen) return null;
 
   return (
     <section

@@ -61,6 +61,15 @@
 }
 
 /* ---------- table cells ---------- */
+.acc-sno-cell {
+  white-space: nowrap;
+  font-family: "Playfair Display", serif;
+  font-weight: 600;
+  color: var(--gold-dark);
+  text-align: center;
+  width: 44px;
+}
+
 .acc-room-cell {
   white-space: nowrap;
 }
@@ -96,9 +105,9 @@
 }
 
 .acc-pill.is-cancelled {
-  color: var(--sage-dark);
-  background: rgba(120, 110, 100, .12);
-  border-color: rgba(120, 110, 100, .4);
+  color: #2f7d51;
+  background: rgba(70, 176, 116, .12);
+  border-color: rgba(70, 176, 116, .5);
 }
 
 /* ---------- row actions ---------- */
@@ -572,6 +581,27 @@
   font-size: 14px;
   font-style: italic;
   color: var(--wine);
+}
+
+.acc-field-warning {
+  font-size: 13.5px;
+  font-style: italic;
+  color: #a06720;
+  display: block;
+  margin-top: 4px;
+}
+
+.acc-modal.is-full-alert {
+  max-width: 440px;
+  text-align: center;
+}
+
+.acc-no-rooms-heading {
+  font-family: "Playfair Display", serif;
+  font-size: 26px;
+  color: var(--wine);
+  margin: 14px 0 8px;
+  letter-spacing: 0.5px;
 }
 
 .acc-booking-form .acc-error {

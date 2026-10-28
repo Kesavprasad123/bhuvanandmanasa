@@ -15,7 +15,23 @@ const WEDDING_SONGS = [
 ];
 
 function App() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(() => {
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      const hash = window.location.hash;
+      const isDirectOpen =
+        searchParams.get('opened') === 'true' ||
+        hash === '#home' ||
+        sessionStorage.getItem('weddingInvitationOpened') === 'true';
+      if (isDirectOpen) {
+        sessionStorage.setItem('weddingInvitationOpened', 'true');
+        return true;
+      }
+    } catch {
+      // ignore
+    }
+    return false;
+  });
   const [isDark, setIsDark] = useState(() => localStorage.getItem('weddingTheme') === 'dark');
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
@@ -85,6 +101,11 @@ function App() {
     if (isOpen) return;
     startMusic();
     setTimeout(() => {
+      try {
+        sessionStorage.setItem('weddingInvitationOpened', 'true');
+      } catch {
+        // ignore
+      }
       setIsOpen(true);
       window.scrollTo(0, 0);
     }, 1550);
