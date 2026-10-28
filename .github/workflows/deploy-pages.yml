@@ -34,6 +34,12 @@ jobs:
 
       - name: Build site
         run: npm run build
+        env:
+          # Room booking status (shared across devices). Set these two repository
+          # variables under Settings → Secrets and variables → Actions → Variables.
+          # Leave them empty to hide the booking status feature.
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
 
       - name: Configure Pages
         uses: actions/configure-pages@v6
