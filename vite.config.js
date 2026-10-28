@@ -28,6 +28,14 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         accommodation: resolve(__dirname, 'accommodation/index.html'),
+    target: 'es2020',
+    cssCodeSplit: true,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+        },
       },
     },
   },

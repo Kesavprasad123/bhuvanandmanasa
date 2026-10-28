@@ -57,6 +57,14 @@ One-time setup (details in `.env.example`):
 3. Run `supabase/seed-bookings.sql` to import the existing allocations.
 4. Set `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` in `.env.local` for
    local dev, and as GitHub Actions variables for production.
+## ⚡ Global Performance Standards & AI Guidelines
+
+This project enforces strict global standards for load speed and mobile responsiveness.
+
+- **WebP Only**: All production images must be in `.webp` format. Never use `.png` or `.jpg` in `public/assets/`.
+- **Raw Photos**: Keep raw original photos in `raw_photos/` (gitignored), never in `public/assets/`.
+- **AI Agent Rules**: If using AI tools (Cursor, Copilot, Antigravity, etc.), please read [AGENTS.md](./AGENTS.md). The workspace skill is located in `.agents/skills/wedding-performance-standards/SKILL.md`.
+- **Standards Check**: Run `npm run check:standards` to verify compliance before committing.
 
 ## 📄 License
 

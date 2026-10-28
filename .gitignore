@@ -21,3 +21,6 @@ Thumbs.db
 # Local data files
 *.xlsx
 *.xls
+
+# Raw uncompressed media sources
+/raw_photos/
