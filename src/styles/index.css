@@ -594,6 +594,16 @@
     background: #f1dfd5
   }
 
+  .floating-nav-links {
+    display: flex;
+    gap: 4px
+  }
+
+  /* Menu button exists for mobile/tablet only (shown in the 900px query). */
+  .nav-menu-btn {
+    display: none
+  }
+
   .theme-toggle {
     width: 34px;
     height: 34px;
@@ -844,6 +854,11 @@
     margin: 25px auto 0;
     perspective: 1200px;
     touch-action: pan-y;
+    /* Off-stage cards sit outside the viewport on phones — clip them here so
+       the page cannot be swiped sideways. Nothing visible is cut: the cards
+       beyond this box were already off-screen. */
+    overflow: hidden;
+    border-radius: 28px;
   }
 
   .events-stage {
@@ -1966,8 +1981,72 @@
       right: 14px
     }
 
-    .floating-nav a {
-      display: none
+    .nav-menu-btn {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: 1px solid #d7b978;
+      border-radius: 50%;
+      background: var(--paper);
+      color: var(--rose-dark);
+      font-size: 17px;
+      line-height: 1;
+      cursor: pointer;
+      transition: background .25s ease, color .25s ease, transform .25s ease
+    }
+
+    .nav-menu-btn:hover {
+      transform: rotate(12deg);
+      background: var(--gold-light);
+      color: var(--wine)
+    }
+
+    .floating-nav-links {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 220px;
+      padding: 8px;
+      background: rgba(255, 250, 244, .96);
+      backdrop-filter: blur(12px);
+      border: 1px solid #ddc59e;
+      border-radius: 18px;
+      box-shadow: 0 18px 36px rgba(48, 24, 20, .22)
+    }
+
+    .floating-nav.is-open .floating-nav-links {
+      display: flex;
+      animation: nav-drop .22s ease
+    }
+
+    .floating-nav-links a {
+      display: block;
+      padding: 11px 15px;
+      font-size: 15px;
+      text-align: right;
+      white-space: nowrap
+    }
+
+    body.dark-theme .floating-nav-links {
+      background: rgba(36, 31, 34, .96);
+      border-color: #725d48
+    }
+
+    @keyframes nav-drop {
+      from {
+        opacity: 0;
+        transform: translateY(-8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
     }
 
     .gallery-grid {

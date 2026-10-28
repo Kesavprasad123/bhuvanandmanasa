@@ -1,16 +1,46 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 function FloatingNav({ isDark, onToggleTheme }) {
-  const handleSmoothScroll = useCallback((e) => {
-    const href = e.currentTarget.getAttribute('href');
+  const [open, setOpen] = useState(false);
+  const navRef = useRef(null);
+
+  // Smooth-scroll only for in-page anchors; full-page links such as
+  // /accommodation must fall through to normal navigation.
+  const handleNavClick = useCallback((e) => {
+    setOpen(false);
+    const href = e.currentTarget.getAttribute('href') || '';
+    if (!href.startsWith('#')) return;
     const target = document.querySelector(href);
     if (!target) return;
     e.preventDefault();
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
 
+  // Close the mobile menu on Escape or a tap/click outside the nav.
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    const onPointerDown = (event) => {
+      if (navRef.current && !navRef.current.contains(event.target)) setOpen(false);
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('pointerdown', onPointerDown);
+    };
+  }, [open]);
+
   return (
-    <nav className="floating-nav" aria-label="Invitation navigation">
+    <nav
+      ref={navRef}
+      className={`floating-nav${open ? ' is-open' : ''}`}
+      aria-label="Invitation navigation"
+    >
       <button
         id="themeToggle"
         className="theme-toggle"
@@ -21,10 +51,26 @@ function FloatingNav({ isDark, onToggleTheme }) {
       >
         {isDark ? '☀' : '☾'}
       </button>
-      <a href="#home" onClick={handleSmoothScroll}>శుభారంభం</a>
-      <a href="#story" onClick={handleSmoothScroll}>వధూవరులు</a>
-      <a href="#events" onClick={handleSmoothScroll}>శుభకార్యాలు</a>
-      <a href="#venue" onClick={handleSmoothScroll}>కళ్యాణ వేదిక</a>
+
+      {/* Shown on mobile/tablet only — toggles the link panel below. */}
+      <button
+        className="nav-menu-btn"
+        type="button"
+        aria-expanded={String(open)}
+        aria-controls="floating-nav-links"
+        aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span aria-hidden="true">{open ? '✕' : '☰'}</span>
+      </button>
+
+      <div className="floating-nav-links" id="floating-nav-links">
+        <a href="#home" onClick={handleNavClick}>శుభారంభం</a>
+        <a href="#story" onClick={handleNavClick}>వధూవరులు</a>
+        <a href="#events" onClick={handleNavClick}>శుభకార్యాలు</a>
+        <a href="#venue" onClick={handleNavClick}>కళ్యాణ వేదిక</a>
+        <a href="/accommodation" onClick={handleNavClick}>వసతి సదుపాయాలు</a>
+      </div>
     </nav>
   );
 }
