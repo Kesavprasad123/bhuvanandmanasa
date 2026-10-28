@@ -101,10 +101,13 @@ export function NoRoomsAvailableDialog({ open, onClose }) {
 }
 
 /**
- * Discreet host login popup: four-digit numeric access code.
+ * Secure Host Login Dialog: Username and Password authentication.
+ * Verified with salted cryptographic hashes.
+ * Both fields are completely empty on open and must be manually typed.
  */
 export function HostLoginDialog({ open, onClose, onSuccess }) {
-  const [code, setCode] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const onCloseRef = useRef(onClose);
@@ -114,27 +117,37 @@ export function HostLoginDialog({ open, onClose, onSuccess }) {
 
   useModal(open, onClose);
 
+  // Keep both fields completely empty whenever the dialog opens or closes
   useEffect(() => {
-    if (!open) {
-      setCode('');
-      setError('');
-      setBusy(false);
-    }
+    setUsername('');
+    setPassword('');
+    setError('');
+    setBusy(false);
   }, [open]);
 
   if (!open) return null;
+
+  const handleClose = () => {
+    if (busy) return;
+    setUsername('');
+    setPassword('');
+    setError('');
+    onCloseRef.current();
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (busy) return;
     setBusy(true);
     setError('');
+
     try {
-      await loginHost(code);
-      setCode('');
+      await loginHost(username, password);
+      setUsername('');
+      setPassword('');
       onSuccessRef.current();
     } catch (err) {
-      setError((err && err.message) || 'Login failed. Please try again.');
+      setError((err && err.message) || 'Incorrect credentials. Try again.');
     } finally {
       setBusy(false);
     }
@@ -145,7 +158,7 @@ export function HostLoginDialog({ open, onClose, onSuccess }) {
       className="acc-modal-backdrop"
       role="presentation"
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !busy) onCloseRef.current();
+        if (event.target === event.currentTarget && !busy) handleClose();
       }}
     >
       <div
@@ -160,48 +173,88 @@ export function HostLoginDialog({ open, onClose, onSuccess }) {
         </span>
         <h2 id="acc-login-title">Host Login</h2>
         <p id="acc-login-desc" className="acc-modal-copy">
-          Enter your four-digit access code to manage room bookings.
+          Enter your host username and password to manage room bookings.
         </p>
 
-        <form className="acc-modal-form" onSubmit={handleSubmit}>
-          <label className="acc-sr-only" htmlFor="acc-host-code">
-            Four-digit access code
-          </label>
-          <input
-            id="acc-host-code"
-            data-autofocus
-            className={`acc-pin-input${error ? ' has-error' : ''}`}
-            type="password"
-            inputMode="numeric"
-            autoComplete="off"
-            maxLength={4}
-            placeholder="••••"
-            value={code}
-            onChange={(event) => {
-              setCode(event.target.value.replace(/\D/g, '').slice(0, 4));
-              if (error) setError('');
-            }}
-            aria-invalid={String(Boolean(error))}
-            aria-describedby={error ? 'acc-login-error' : 'acc-login-desc'}
-          />
+        <form
+          className="acc-modal-form"
+          onSubmit={handleSubmit}
+          noValidate
+          autoComplete="off"
+        >
+          <div className="acc-login-fields">
+            <div className="acc-login-field">
+              <label htmlFor="acc-host-username">Username</label>
+              <input
+                id="acc-host-username"
+                name="acc_host_user"
+                data-autofocus
+                className={`acc-login-input${error ? ' has-error' : ''}`}
+                type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck="false"
+                data-lpignore="true"
+                data-1p-ignore="true"
+                placeholder="Enter username"
+                value={username}
+                onChange={(event) => {
+                  setUsername(event.target.value);
+                  if (error) setError('');
+                }}
+              />
+            </div>
+
+            <div className="acc-login-field">
+              <label htmlFor="acc-host-password">Password</label>
+              <input
+                id="acc-host-password"
+                name="acc_host_pass"
+                className={`acc-login-input${error ? ' has-error' : ''}`}
+                type="password"
+                autoComplete="new-password"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck="false"
+                data-lpignore="true"
+                data-1p-ignore="true"
+                placeholder="Enter password"
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                  if (error) setError('');
+                }}
+              />
+            </div>
+          </div>
 
           <div className="acc-modal-actions">
-            <button className="gold-button acc-pin-submit" type="submit" disabled={busy || code.length !== 4}>
-              {busy ? 'Checking…' : 'Login'}
+            <button
+              className="gold-button acc-pin-submit"
+              type="submit"
+              disabled={busy || !username.trim() || !password}
+            >
+              {busy ? 'Authenticating…' : 'Login'}
             </button>
-            <button className="acc-ghost-button" type="button" onClick={onClose} disabled={busy}>
+            <button
+              className="acc-ghost-button"
+              type="button"
+              onClick={handleClose}
+              disabled={busy}
+            >
               Cancel
             </button>
           </div>
         </form>
 
         {error && (
-          <p id="acc-login-error" className="acc-error" role="alert">
+          <p id="acc-login-error" className="acc-error" role="alert" style={{ marginTop: '12px' }}>
             {error}
           </p>
         )}
 
-        <p className="acc-modal-note">Verified securely on the server — guest details stay protected.</p>
+        <p className="acc-modal-note">Protected with salted cryptographic verification.</p>
       </div>
     </div>
   );
@@ -210,17 +263,21 @@ export function HostLoginDialog({ open, onClose, onSuccess }) {
 /**
  * Host Add / Edit booking form.
  * Required fields in order:
- * 1. Name: Text input for the guest's name.
- * 2. Check-in: Date picker with a calendar.
- * 3. Check-out: Date picker with a calendar.
- * 4. Room No.: Dropdown showing only available rooms in the selected property.
- * 5. Book Room: Button to save and confirm the booking.
+ * 1. Guest Name — text input
+ * 2. Room Number — dropdown showing ONLY available rooms
+ * 3. Check-in Date — calendar picker
+ * 4. Check-in Time — time picker
+ * 5. Check-out Date — calendar picker
+ * 6. Check-out Time — time picker
+ * 7. Book Room button (Save Changes in edit mode)
  */
 export function BookingFormDialog({ open, mode, booking, property, bookings, onClose, onSubmit }) {
   const [guestName, setGuestName] = useState('');
   const [room, setRoom] = useState('');
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkInTime, setCheckInTime] = useState('12:00');
+  const [checkOutDate, setCheckOutDate] = useState('');
+  const [checkOutTime, setCheckOutTime] = useState('11:00');
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -235,18 +292,35 @@ export function BookingFormDialog({ open, mode, booking, property, bookings, onC
 
   useEffect(() => {
     if (open) {
-      setGuestName(booking ? booking.guest_name : '');
-      setRoom(booking ? String(booking.room) : '');
-      setCheckIn(booking ? booking.check_in : '');
-      setCheckOut(booking ? booking.check_out : '');
+      if (booking) {
+        setGuestName(booking.guest_name || '');
+        setRoom(String(booking.room || ''));
+        // Parse date and time
+        const inParts = String(booking.check_in || '').split('T');
+        setCheckInDate(inParts[0] || '');
+        setCheckInTime(booking.check_in_time || (inParts[1] ? inParts[1].slice(0, 5) : '12:00'));
+
+        const outParts = String(booking.check_out || '').split('T');
+        setCheckOutDate(outParts[0] || '');
+        setCheckOutTime(booking.check_out_time || (outParts[1] ? outParts[1].slice(0, 5) : '11:00'));
+      } else {
+        setGuestName('');
+        setRoom('');
+        setCheckInDate('');
+        setCheckInTime('12:00');
+        setCheckOutDate('');
+        setCheckOutTime('11:00');
+      }
       setErrors({});
       setFormError('');
       setBusy(false);
     } else {
       setGuestName('');
       setRoom('');
-      setCheckIn('');
-      setCheckOut('');
+      setCheckInDate('');
+      setCheckInTime('12:00');
+      setCheckOutDate('');
+      setCheckOutTime('11:00');
       setErrors({});
       setFormError('');
       setBusy(false);
@@ -256,28 +330,41 @@ export function BookingFormDialog({ open, mode, booking, property, bookings, onC
   const ignoreId = booking ? booking.id : undefined;
 
   const conflictFor = (roomNumber) =>
-    roomConflictsWith(property.id, roomNumber, checkIn, checkOut, bookings, ignoreId);
+    roomConflictsWith(
+      property.id,
+      roomNumber,
+      checkInDate,
+      checkInTime,
+      checkOutDate,
+      checkOutTime,
+      bookings,
+      ignoreId
+    );
 
   // Compute available rooms only
   const availableRooms = useMemo(() => {
     if (!property || !property.rooms) return [];
     return property.rooms.filter((roomNumber) => {
       if (isEdit && booking && String(booking.room) === String(roomNumber)) {
-        if (!checkIn || !checkOut) return true;
+        if (!checkInDate || !checkOutDate) return true;
         return !conflictFor(roomNumber);
       }
-      if (checkIn && checkOut) {
+      if (checkInDate && checkOutDate) {
         return !conflictFor(roomNumber);
       }
       // If dates are not entered yet, exclude rooms that currently have active bookings
       const isCurrentlyBooked = (bookings || []).some(
-        (b) => b.property_id === property.id && String(b.room) === String(roomNumber) && b.status === 'active' && b.id !== ignoreId
+        (b) =>
+          b.property_id === property.id &&
+          String(b.room) === String(roomNumber) &&
+          b.status === 'active' &&
+          b.id !== ignoreId
       );
       return !isCurrentlyBooked;
     });
-  }, [property, bookings, checkIn, checkOut, isEdit, booking, ignoreId]);
+  }, [property, bookings, checkInDate, checkInTime, checkOutDate, checkOutTime, isEdit, booking, ignoreId]);
 
-  // If currently selected room becomes unavailable due to date change, clear it
+  // If currently selected room becomes unavailable due to date/time change, clear it
   useEffect(() => {
     if (room && availableRooms.length > 0 && !availableRooms.includes(String(room))) {
       setRoom('');
@@ -293,19 +380,16 @@ export function BookingFormDialog({ open, mode, booking, property, bookings, onC
     const values = {
       guestName: guestName.trim(),
       room,
-      checkIn,
-      checkOut,
+      checkIn: checkInDate,
+      checkInTime,
+      checkOut: checkOutDate,
+      checkOutTime,
     };
 
     const nextErrors = {};
-    if (!values.guestName) nextErrors.guestName = 'Name is required.';
+    if (!values.guestName) nextErrors.guestName = 'Guest name is required.';
     else if (values.guestName.length > 120)
-      nextErrors.guestName = 'Name is too long (120 characters maximum).';
-
-    if (!values.checkIn) nextErrors.checkIn = 'Check-in date is required.';
-    if (!values.checkOut) nextErrors.checkOut = 'Check-out date is required.';
-    if (values.checkIn && values.checkOut && values.checkOut <= values.checkIn)
-      nextErrors.checkOut = 'Check-out must be later than check-in.';
+      nextErrors.guestName = 'Guest name is too long (120 characters maximum).';
 
     if (!values.room) {
       if (availableRooms.length === 0) {
@@ -313,13 +397,21 @@ export function BookingFormDialog({ open, mode, booking, property, bookings, onC
       } else {
         nextErrors.room = 'Please select a room.';
       }
-    } else if (
-      values.checkIn &&
-      values.checkOut &&
-      !nextErrors.checkOut &&
-      conflictFor(values.room)
-    ) {
-      nextErrors.room = 'This room is already booked for those dates.';
+    }
+
+    if (!values.checkIn) nextErrors.checkIn = 'Check-in date is required.';
+    if (!values.checkInTime) nextErrors.checkInTime = 'Check-in time is required.';
+    if (!values.checkOut) nextErrors.checkOut = 'Check-out date is required.';
+    if (!values.checkOutTime) nextErrors.checkOutTime = 'Check-out time is required.';
+
+    if (values.checkIn && values.checkOut && values.checkInTime && values.checkOutTime) {
+      const inFull = `${values.checkIn}T${values.checkInTime}`;
+      const outFull = `${values.checkOut}T${values.checkOutTime}`;
+      if (outFull <= inFull) {
+        nextErrors.checkOut = 'Check-out date and time must be later than check-in date and time.';
+      } else if (!nextErrors.room && values.room && conflictFor(values.room)) {
+        nextErrors.room = 'This room is already booked for those dates and times.';
+      }
     }
 
     if (Object.keys(nextErrors).length > 0) {
@@ -368,15 +460,15 @@ export function BookingFormDialog({ open, mode, booking, property, bookings, onC
         <h2 id="acc-form-title">{isEdit ? 'Edit Booking' : 'Add Booking'}</h2>
         <p className="acc-modal-copy">
           {isEdit
-            ? 'Update the guest details, room or dates for this reservation.'
+            ? 'Update the guest details, room, date or times for this reservation.'
             : `Assign a guest to an available room at ${property.name}.`}
         </p>
 
         <form className="acc-booking-form" onSubmit={handleSubmit} noValidate>
           <div className="acc-form-grid">
-            {/* 1. Name */}
+            {/* 1. Guest Name */}
             <div className="acc-field">
-              <label htmlFor="bf-guest">Name</label>
+              <label htmlFor="bf-guest">Guest Name</label>
               <input
                 id="bf-guest"
                 data-autofocus
@@ -395,43 +487,9 @@ export function BookingFormDialog({ open, mode, booking, property, bookings, onC
               {fieldError('guestName')}
             </div>
 
-            {/* 2. Check-in */}
+            {/* 2. Room Number (showing ONLY available rooms) */}
             <div className="acc-field">
-              <label htmlFor="bf-check-in">Check-in</label>
-              <input
-                id="bf-check-in"
-                type="date"
-                value={checkIn}
-                onChange={(event) => {
-                  setCheckIn(event.target.value);
-                  if (errors.checkIn) setErrors((prev) => ({ ...prev, checkIn: '' }));
-                }}
-                aria-invalid={String(Boolean(errors.checkIn))}
-                aria-describedby={errors.checkIn ? 'bf-checkIn-error' : undefined}
-              />
-              {fieldError('checkIn')}
-            </div>
-
-            {/* 3. Check-out */}
-            <div className="acc-field">
-              <label htmlFor="bf-check-out">Check-out</label>
-              <input
-                id="bf-check-out"
-                type="date"
-                value={checkOut}
-                onChange={(event) => {
-                  setCheckOut(event.target.value);
-                  if (errors.checkOut) setErrors((prev) => ({ ...prev, checkOut: '' }));
-                }}
-                aria-invalid={String(Boolean(errors.checkOut))}
-                aria-describedby={errors.checkOut ? 'bf-checkOut-error' : undefined}
-              />
-              {fieldError('checkOut')}
-            </div>
-
-            {/* 4. Room No. (showing ONLY available rooms) */}
-            <div className="acc-field">
-              <label htmlFor="bf-room">Room No.</label>
+              <label htmlFor="bf-room">Room Number</label>
               <select
                 id="bf-room"
                 value={room}
@@ -455,9 +513,77 @@ export function BookingFormDialog({ open, mode, booking, property, bookings, onC
               {fieldError('room')}
               {availableRooms.length === 0 && (
                 <span className="acc-field-warning">
-                  No rooms are currently available for the selected criteria.
+                  No rooms are currently available for the selected dates.
                 </span>
               )}
+            </div>
+
+            {/* 3. Check-in Date */}
+            <div className="acc-field">
+              <label htmlFor="bf-check-in-date">Check-in Date</label>
+              <input
+                id="bf-check-in-date"
+                type="date"
+                value={checkInDate}
+                onChange={(event) => {
+                  setCheckInDate(event.target.value);
+                  if (errors.checkIn) setErrors((prev) => ({ ...prev, checkIn: '' }));
+                }}
+                aria-invalid={String(Boolean(errors.checkIn))}
+                aria-describedby={errors.checkIn ? 'bf-checkIn-error' : undefined}
+              />
+              {fieldError('checkIn')}
+            </div>
+
+            {/* 4. Check-in Time */}
+            <div className="acc-field">
+              <label htmlFor="bf-check-in-time">Check-in Time</label>
+              <input
+                id="bf-check-in-time"
+                type="time"
+                value={checkInTime}
+                onChange={(event) => {
+                  setCheckInTime(event.target.value);
+                  if (errors.checkInTime) setErrors((prev) => ({ ...prev, checkInTime: '' }));
+                }}
+                aria-invalid={String(Boolean(errors.checkInTime))}
+                aria-describedby={errors.checkInTime ? 'bf-checkInTime-error' : undefined}
+              />
+              {fieldError('checkInTime')}
+            </div>
+
+            {/* 5. Check-out Date */}
+            <div className="acc-field">
+              <label htmlFor="bf-check-out-date">Check-out Date</label>
+              <input
+                id="bf-check-out-date"
+                type="date"
+                value={checkOutDate}
+                onChange={(event) => {
+                  setCheckOutDate(event.target.value);
+                  if (errors.checkOut) setErrors((prev) => ({ ...prev, checkOut: '' }));
+                }}
+                aria-invalid={String(Boolean(errors.checkOut))}
+                aria-describedby={errors.checkOut ? 'bf-checkOut-error' : undefined}
+              />
+              {fieldError('checkOut')}
+            </div>
+
+            {/* 6. Check-out Time */}
+            <div className="acc-field">
+              <label htmlFor="bf-check-out-time">Check-out Time</label>
+              <input
+                id="bf-check-out-time"
+                type="time"
+                value={checkOutTime}
+                onChange={(event) => {
+                  setCheckOutTime(event.target.value);
+                  if (errors.checkOutTime) setErrors((prev) => ({ ...prev, checkOutTime: '' }));
+                }}
+                aria-invalid={String(Boolean(errors.checkOutTime))}
+                aria-describedby={errors.checkOutTime ? 'bf-checkOutTime-error' : undefined}
+              />
+              {fieldError('checkOutTime')}
             </div>
           </div>
 
@@ -467,7 +593,7 @@ export function BookingFormDialog({ open, mode, booking, property, bookings, onC
             </p>
           )}
 
-          {/* 5. Book Room / Save Changes */}
+          {/* 7. Book Room / Save Changes */}
           <div className="acc-modal-actions">
             <button
               className="gold-button"

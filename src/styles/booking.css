@@ -90,12 +90,7 @@
 }
 
 .acc-pill:before {
-  content: "";
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: .85;
+  display: none;
 }
 
 .acc-pill.is-active {
@@ -388,11 +383,18 @@
   border: none;
   outline: none;
   background: transparent;
-  color: var(--ink);
+  color: #000000 !important;
   font-family: "Playfair Display", serif;
   font-size: 14.5px;
   letter-spacing: 1px;
+  font-weight: 600;
   cursor: pointer;
+}
+
+.acc-select select option {
+  color: #000000 !important;
+  background: #ffffff;
+  font-weight: 500;
 }
 
 /* ---------- PIN popup ---------- */
@@ -482,6 +484,60 @@
 }
 
 .acc-pin-input.has-error {
+  border-color: var(--wine);
+  animation: acc-shake .38s ease;
+}
+
+.acc-login-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 340px;
+  text-align: left;
+}
+
+.acc-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.acc-login-field label {
+  font-family: "Playfair Display", serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--sage-dark);
+}
+
+.acc-login-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 17px;
+  color: var(--ink);
+  background: var(--cream);
+  border: 1px solid #dcc7a4;
+  border-radius: 12px;
+  outline: none;
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+
+.acc-login-input::placeholder {
+  color: #a39582;
+  opacity: 0.65;
+  font-family: inherit;
+  font-style: italic;
+}
+
+.acc-login-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(189, 138, 66, .25);
+}
+
+.acc-login-input.has-error {
   border-color: var(--wine);
   animation: acc-shake .38s ease;
 }
@@ -638,16 +694,34 @@ body.dark-theme .acc-led {
   border-color: rgba(0, 0, 0, .4);
 }
 
-body.dark-theme .acc-pin-input {
+body.dark-theme .acc-pin-input,
+body.dark-theme .acc-login-input {
   background: #2c262a;
   border-color: #6c5a44;
   color: var(--gold-light);
 }
 
-body.dark-theme .acc-room-tile,
-body.dark-theme .acc-select {
+body.dark-theme .acc-login-input::placeholder {
+  color: #928374;
+  opacity: 0.65;
+}
+
+body.dark-theme .acc-room-tile {
   background: #2c262a;
   border-color: #6c5a44;
+}
+
+body.dark-theme .acc-select {
+  background: #fbf7f0;
+  border-color: #dcc7a4;
+}
+
+body.dark-theme .acc-select select {
+  color: #000000 !important;
+}
+
+body.dark-theme .acc-select-label {
+  color: var(--sage-dark);
 }
 
 body.dark-theme .acc-tab:hover {

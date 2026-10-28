@@ -32,6 +32,36 @@ function formatDate(iso) {
   return `${day} ${MONTHS[month - 1]} ${year}`;
 }
 
+function formatTime(timeStr) {
+  if (!timeStr) return '';
+  const [hStr, mStr] = String(timeStr).split(':');
+  const h = Number(hStr);
+  const m = Number(mStr || 0);
+  if (isNaN(h)) return timeStr;
+  const period = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h % 12 || 12;
+  const minuteFormatted = String(m).padStart(2, '0');
+  return `${hour12}:${minuteFormatted} ${period}`;
+}
+
+function formatDateTime(isoDate, timeStr) {
+  if (!isoDate) return '—';
+  let datePart = isoDate;
+  let timePart = timeStr;
+  if (isoDate.includes('T')) {
+    const parts = isoDate.split('T');
+    datePart = parts[0];
+    if (!timePart && parts[1]) {
+      timePart = parts[1].slice(0, 5);
+    }
+  }
+  const dateFormatted = formatDate(datePart);
+  if (timePart) {
+    return `${dateFormatted}, ${formatTime(timePart)}`;
+  }
+  return dateFormatted;
+}
+
 /**
  * Host-only dashboard: pick a property, see its stats and room lights, then
  * search / filter / add / edit / unblock / delete bookings.
@@ -144,7 +174,9 @@ function HostDashboard({
           room: values.room,
           guestName: values.guestName,
           checkIn: values.checkIn,
+          checkInTime: values.checkInTime,
           checkOut: values.checkOut,
+          checkOutTime: values.checkOutTime,
         });
       } else {
         await createBooking({
@@ -152,7 +184,9 @@ function HostDashboard({
           room: values.room,
           guestName: values.guestName,
           checkIn: values.checkIn,
+          checkInTime: values.checkInTime,
           checkOut: values.checkOut,
+          checkOutTime: values.checkOutTime,
         });
       }
     } catch (error) {
@@ -423,8 +457,8 @@ function HostDashboard({
                         <td data-label="Room No." className="acc-room-cell">
                           <span className="acc-room-badge">Room {booking.room}</span>
                         </td>
-                        <td data-label="Check-in">{formatDate(booking.check_in)}</td>
-                        <td data-label="Check-out">{formatDate(booking.check_out)}</td>
+                        <td data-label="Check-in">{formatDateTime(booking.check_in, booking.check_in_time)}</td>
+                        <td data-label="Check-out">{formatDateTime(booking.check_out, booking.check_out_time)}</td>
                         <td data-label="Status">
                           <span className={`acc-pill is-${booking.status}`}>
                             <span
