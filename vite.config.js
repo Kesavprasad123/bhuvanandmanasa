@@ -6,5 +6,15 @@ export default defineConfig({
   base: '/',
   build: {
     outDir: 'dist',
+    target: 'es2020',
+    cssCodeSplit: true,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+        },
+      },
+    },
   },
 });
