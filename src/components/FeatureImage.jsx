@@ -1,8 +1,12 @@
+const BASE = import.meta.env.BASE_URL || './';
+const cleanBase = BASE.endsWith('/') ? BASE : `${BASE}/`;
+const featureImgSrc = `${cleanBase}assets/feature-img.webp`;
+
 function FeatureImage() {
   return (
     <section className="feature-section">
       <img
-        src="/assets/feature-img.webp"
+        src={featureImgSrc}
         alt="Bhuvan and Manasa wedding celebration"
         loading="lazy"
         decoding="async"

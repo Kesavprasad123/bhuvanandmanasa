@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+const BASE = import.meta.env.BASE_URL || './';
+const cleanBase = BASE.endsWith('/') ? BASE : `${BASE}/`;
+const accommodationHref = `${cleanBase}accommodation/`;
+
 function FloatingNav({ isDark, onToggleTheme }) {
   const [open, setOpen] = useState(false);
   const navRef = useRef(null);
@@ -69,7 +73,7 @@ function FloatingNav({ isDark, onToggleTheme }) {
         <a href="#story" onClick={handleNavClick}>వధూవరులు</a>
         <a href="#events" onClick={handleNavClick}>శుభకార్యాలు</a>
         <a href="#venue" onClick={handleNavClick}>కళ్యాణ వేదిక</a>
-        <a href="/accommodation" onClick={handleNavClick}>వసతి సదుపాయాలు</a>
+        <a href={accommodationHref} onClick={handleNavClick}>వసతి సదుపాయాలు</a>
       </div>
     </nav>
   );

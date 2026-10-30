@@ -6,22 +6,42 @@ import useScrollReveal from './hooks/useScrollReveal';
 const loadMainInvitation = () => import('./components/MainInvitation');
 const MainInvitation = lazy(loadMainInvitation);
 
+const BASE = import.meta.env.BASE_URL || './';
+const cleanBase = BASE.endsWith('/') ? BASE : `${BASE}/`;
+const assetUrl = (p) => `${cleanBase}${p.replace(/^\/+/, '')}`;
+
 const WEDDING_SONGS = [
-  '/assets/Raarandoi-veduka-choodham.mp3',
-  '/assets/Alanati Ramachandrudu.mp3',
-  '/assets/kalyanam-vybhogam.mp3',
-  '/assets/marriage.mp3',
-  '/assets/shararat.mp3',
-  '/assets/Shatamanam Bhavati.mp3',
-  '/assets/jaya-mangalam.mp3',
+  assetUrl('assets/Raarandoi-veduka-choodham.mp3'),
+  assetUrl('assets/Alanati Ramachandrudu.mp3'),
+  assetUrl('assets/kalyanam-vybhogam.mp3'),
+  assetUrl('assets/marriage.mp3'),
+  assetUrl('assets/shararat.mp3'),
+  assetUrl('assets/Shatamanam Bhavati.mp3'),
+  assetUrl('assets/jaya-mangalam.mp3'),
 ];
+
+const getStoredTheme = () => {
+  try {
+    return localStorage.getItem('weddingTheme') === 'dark';
+  } catch {
+    return false;
+  }
+};
+
+const getStoredSongIndex = () => {
+  try {
+    return Number(localStorage.getItem('weddingSongIndex') || 0);
+  } catch {
+    return 0;
+  }
+};
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDark, setIsDark] = useState(() => localStorage.getItem('weddingTheme') === 'dark');
+  const [isDark, setIsDark] = useState(getStoredTheme);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
-  const songIndexRef = useRef(Number(localStorage.getItem('weddingSongIndex') || 0));
+  const songIndexRef = useRef(getStoredSongIndex());
 
   // Apply theme
   useEffect(() => {
@@ -55,7 +75,9 @@ function App() {
   const toggleTheme = useCallback(() => {
     setIsDark((prev) => {
       const next = !prev;
-      localStorage.setItem('weddingTheme', next ? 'dark' : 'light');
+      try {
+        localStorage.setItem('weddingTheme', next ? 'dark' : 'light');
+      } catch {}
       return next;
     });
   }, []);
@@ -69,7 +91,9 @@ function App() {
       await audio.play();
       setMusicPlaying(true);
       songIndexRef.current = (songIndexRef.current + 1) % WEDDING_SONGS.length;
-      localStorage.setItem('weddingSongIndex', songIndexRef.current);
+      try {
+        localStorage.setItem('weddingSongIndex', songIndexRef.current);
+      } catch {}
     } catch (error) {
       setMusicPlaying(false);
       console.warn('Wedding music is unavailable:', error.message);

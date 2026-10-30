@@ -16,12 +16,22 @@ export default defineConfig({
         const indexHtml = resolve(dist, 'index.html');
         const notFoundHtml = resolve(dist, '404.html');
         if (fs.existsSync(indexHtml)) {
-          fs.copyFileSync(indexHtml, notFoundHtml);
+          let html = fs.readFileSync(indexHtml, 'utf8');
+          const redirectScript = `<script>
+            (function() {
+              var path = window.location.pathname;
+              if (/\\/accommodation(?![\\w-])/i.test(path) && !path.endsWith('/')) {
+                window.location.replace(window.location.origin + path + '/' + window.location.search + window.location.hash);
+              }
+            })();
+          </script>`;
+          html = html.replace('<head>', '<head>\n  ' + redirectScript);
+          fs.writeFileSync(notFoundHtml, html);
         }
       },
     },
   ],
-  base: '/',
+  base: './',
   build: {
     outDir: 'dist',
     target: 'es2020',
@@ -33,8 +43,10 @@ export default defineConfig({
         accommodation: resolve(__dirname, 'accommodation/index.html'),
       },
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'vendor-react';
+          }
         },
       },
     },

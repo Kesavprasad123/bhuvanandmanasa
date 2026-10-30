@@ -234,8 +234,18 @@ function AvailabilityTable({ property, availabilityState, availability }) {
   );
 }
 
+const homeHref = import.meta.env.BASE_URL || './';
+
+const getStoredTheme = () => {
+  try {
+    return localStorage.getItem('weddingTheme') === 'dark';
+  } catch {
+    return false;
+  }
+};
+
 function Accommodation() {
-  const [isDark, setIsDark] = useState(() => localStorage.getItem('weddingTheme') === 'dark');
+  const [isDark, setIsDark] = useState(getStoredTheme);
   const [selectedId, setSelectedId] = useState(propertyFromHash);
 
   // Live room counts, shared across devices through Supabase.
@@ -398,7 +408,7 @@ function Accommodation() {
   return (
     <div className="acc-page">
       <header className="acc-topbar">
-        <a className="acc-home-link" href="/">
+        <a className="acc-home-link" href={homeHref}>
           ← Invitation
         </a>
         <div className="acc-topbar-actions">
@@ -425,7 +435,9 @@ function Accommodation() {
             onClick={() =>
               setIsDark((prev) => {
                 const next = !prev;
-                localStorage.setItem('weddingTheme', next ? 'dark' : 'light');
+                try {
+                  localStorage.setItem('weddingTheme', next ? 'dark' : 'light');
+                } catch {}
                 return next;
               })
             }
@@ -568,7 +580,7 @@ function Accommodation() {
       <footer className="acc-footer">
         <Ornament />
         <p>Bhuvan &amp; Manasa · 12 December 2026</p>
-        <a className="acc-footer-link" href="/">
+        <a className="acc-footer-link" href={homeHref}>
           ← Back to the wedding invitation
         </a>
       </footer>

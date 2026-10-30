@@ -3057,3 +3057,299 @@
       inset: -10% -2%;
     }
   }
+
+  /* =========================================================
+     GLOBAL MULTI-DEVICE & SCREEN COMPATIBILITY
+     iOS, Android, Tablets, Laptops, 4K, 8K, 43" & 55" Displays
+     ========================================================= */
+
+  /* 1. iOS Safe Area & Notch Support */
+  @supports (padding: max(0px)) {
+    .floating-nav {
+      top: max(14px, env(safe-area-inset-top, 14px));
+      right: max(14px, env(safe-area-inset-right, 14px));
+    }
+
+    .music-toggle {
+      bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+      right: max(22px, env(safe-area-inset-right, 22px));
+    }
+
+    .opening-ornament.top {
+      top: max(20px, env(safe-area-inset-top, 20px));
+    }
+
+    .opening-ornament.bottom {
+      bottom: max(18px, env(safe-area-inset-bottom, 18px));
+    }
+  }
+
+  /* 2. Compact Mobile (<= 360px: iPhone SE, older Android) */
+  @media (max-width: 360px) {
+    .opening-content {
+      width: 95vw;
+    }
+
+    .envelope-button {
+      width: min(290px, 92vw);
+    }
+
+    .hero h1 {
+      font-size: 58px;
+      gap: 12px;
+    }
+
+    .countdown {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .countdown div {
+      padding: 14px 6px;
+    }
+
+    .countdown strong {
+      font-size: 32px;
+    }
+
+    .stage-card {
+      width: min(280px, 86vw);
+      height: 440px;
+    }
+
+    .venue-card {
+      padding: 35px 18px;
+    }
+  }
+
+  /* 3. 2K / QHD / 1440p Screens (min-width: 1921px) */
+  @media (min-width: 1921px) {
+    body {
+      font-size: 19px;
+    }
+
+    .section-inner {
+      width: min(1200px, 88%);
+    }
+
+    .section-inner.wide {
+      width: min(1480px, 90%);
+    }
+
+    .family-panel {
+      width: min(1320px, 88%);
+      padding: 70px 55px;
+    }
+
+    .events-stage-wrapper {
+      max-width: 1400px;
+    }
+
+    .events-stage {
+      height: 640px;
+    }
+
+    .stage-card {
+      width: 400px;
+      height: 560px;
+    }
+
+    .stage-card.is-prev {
+      transform: translate(calc(-50% - 320px), -50%) scale(0.85) rotateY(12deg);
+    }
+
+    .stage-card.is-next {
+      transform: translate(calc(-50% + 320px), -50%) scale(0.85) rotateY(-12deg);
+    }
+
+    .photo-collage {
+      width: min(1400px, 90%);
+      grid-auto-rows: 270px;
+    }
+
+    .venue-card {
+      width: min(1280px, 88%);
+    }
+
+    .envelope-button {
+      width: 460px;
+    }
+
+    .floating-nav a {
+      font-size: 16px;
+      padding: 10px 16px;
+    }
+  }
+
+  /* 4. 4K Displays, 43" & 55" Large TVs (min-width: 2560px) */
+  @media (min-width: 2560px) {
+    body {
+      font-size: 22px;
+    }
+
+    .section-inner {
+      width: min(1500px, 85%);
+    }
+
+    .section-inner.wide {
+      width: min(1800px, 88%);
+    }
+
+    .family-panel {
+      width: min(1600px, 86%);
+      padding: 85px 70px;
+    }
+
+    .family-intro {
+      max-width: 900px;
+      font-size: 24px;
+    }
+
+    .couple-names {
+      max-width: 1200px;
+    }
+
+    .person h3 {
+      font-size: 82px;
+    }
+
+    .events-stage-wrapper {
+      max-width: 1700px;
+    }
+
+    .events-stage {
+      height: 720px;
+    }
+
+    .stage-card {
+      width: 460px;
+      height: 640px;
+    }
+
+    .stage-card.is-prev {
+      transform: translate(calc(-50% - 390px), -50%) scale(0.86) rotateY(12deg);
+    }
+
+    .stage-card.is-next {
+      transform: translate(calc(-50% + 390px), -50%) scale(0.86) rotateY(-12deg);
+    }
+
+    .stage-card-title {
+      font-size: 64px;
+    }
+
+    .stage-card-content {
+      padding: 30px 26px;
+    }
+
+    .photo-collage {
+      width: min(1700px, 88%);
+      grid-auto-rows: 330px;
+      gap: 20px;
+    }
+
+    .venue-card {
+      width: min(1500px, 85%);
+      padding: 75px 50px;
+    }
+
+    .countdown {
+      width: min(1100px, 90%);
+      gap: 22px;
+    }
+
+    .countdown div {
+      padding: 35px 20px;
+      border-radius: 24px;
+    }
+
+    .countdown strong {
+      font-size: 72px;
+    }
+
+    .countdown span {
+      font-size: 15px;
+    }
+
+    .envelope-button {
+      width: 540px;
+    }
+
+    .opening h1 {
+      font-size: 86px;
+    }
+
+    .tap-hint {
+      font-size: 22px;
+    }
+
+    .music-toggle {
+      width: 68px;
+      height: 68px;
+      font-size: 28px;
+    }
+
+    .floating-nav {
+      padding: 8px;
+    }
+
+    .floating-nav a {
+      font-size: 18px;
+      padding: 12px 20px;
+    }
+
+    .theme-toggle {
+      width: 44px;
+      height: 44px;
+      font-size: 24px;
+    }
+  }
+
+  /* 5. 8K Ultra Displays (min-width: 5120px) */
+  @media (min-width: 5120px) {
+    body {
+      font-size: 28px;
+    }
+
+    .section-inner {
+      width: min(2200px, 80%);
+    }
+
+    .section-inner.wide {
+      width: min(2600px, 84%);
+    }
+
+    .family-panel {
+      width: min(2300px, 82%);
+      padding: 110px 90px;
+    }
+
+    .events-stage-wrapper {
+      max-width: 2400px;
+    }
+
+    .events-stage {
+      height: 900px;
+    }
+
+    .stage-card {
+      width: 580px;
+      height: 800px;
+    }
+
+    .photo-collage {
+      width: min(2500px, 84%);
+      grid-auto-rows: 440px;
+      gap: 28px;
+    }
+
+    .envelope-button {
+      width: 680px;
+    }
+
+    .music-toggle {
+      width: 84px;
+      height: 84px;
+      font-size: 36px;
+    }
+  }
