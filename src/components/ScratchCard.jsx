@@ -463,6 +463,8 @@ function ScratchCard({ onRevealed }) {
     };
 
     redraw();
+    const t1 = setTimeout(() => { if (!disposed) redraw(); }, 50);
+    const t2 = setTimeout(() => { if (!disposed) redraw(); }, 300);
 
     const observer =
       typeof ResizeObserver !== 'undefined' ? new ResizeObserver(handleResize) : null;
@@ -492,6 +494,8 @@ function ScratchCard({ onRevealed }) {
 
     return () => {
       disposed = true;
+      clearTimeout(t1);
+      clearTimeout(t2);
       cancelAnimationFrame(frame);
       if (observer) observer.disconnect();
       window.removeEventListener('orientationchange', handleResize);

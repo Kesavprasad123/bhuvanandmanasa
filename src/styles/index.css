@@ -1615,8 +1615,9 @@
 
   .reveal {
     opacity: 0;
-    transform: translateY(30px);
-    transition: opacity .9s ease, transform .9s ease;
+    transform: translateY(24px);
+    transition: opacity .8s ease, transform .8s ease;
+    will-change: opacity, transform;
   }
 
   .reveal.visible {
