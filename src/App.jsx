@@ -25,6 +25,7 @@ function App() {
     startMusic,
     toggleMusic,
     handleSongEnded,
+    handleAudioError,
   } = useWeddingMusic({ isLandingPage: true });
 
   // On every initial load and page refresh, guarantee landing on the opening envelope screen
@@ -95,7 +96,12 @@ function App() {
   return (
     <>
       <FallingFlowers />
-      <audio ref={audioRef} onEnded={handleSongEnded} preload="none" />
+      <audio
+        ref={audioRef}
+        onEnded={handleSongEnded}
+        onError={handleAudioError}
+        preload="none"
+      />
 
       <Opening isOpen={isOpen} onOpen={handleOpenEnvelope} />
 

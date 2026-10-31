@@ -270,6 +270,7 @@ function Accommodation() {
     musicPlaying,
     toggleMusic,
     handleSongEnded,
+    handleAudioError,
   } = useWeddingMusic({ autoStartIfActive: true });
 
   useEffect(() => {
@@ -449,7 +450,12 @@ function Accommodation() {
 
   return (
     <div className="acc-page">
-      <audio ref={audioRef} onEnded={handleSongEnded} preload="none" />
+      <audio
+        ref={audioRef}
+        onEnded={handleSongEnded}
+        onError={handleAudioError}
+        preload="none"
+      />
       <MusicToggle playing={musicPlaying} onToggle={toggleMusic} />
       <header className="acc-topbar">
         <a className="acc-home-link" href={homeHref} onClick={handleBackToInvitation}>

@@ -41,19 +41,20 @@ const getStoredSongIndex = () => {
  * Shared wedding background music hook for Main Invitation & Accommodation.
  *
  * Requirements handled:
- * 1. Sequential playback: When a song completes, automatically switches to the next song.
- * 2. On every refresh: Automatically changes to a different song in the playlist.
- * 3. Cross-page continuity: Continues playing smoothly when switching to Accommodation and back.
+ * 1. Immediate playback on site open: User tap starts song without delay.
+ * 2. Sequential auto-play: When a song completes, automatically advances to the next song (never repeats).
+ * 3. On every refresh: Starts with a different song in rotation.
+ * 4. Cross-page continuity: Seamlessly keeps playing when switching to Accommodation and back.
  */
 export function useWeddingMusic({ autoStartIfActive = false, isLandingPage = false } = {}) {
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
 
-  // Initialize song index
-  const songIndexRef = useRef(() => {
+  // Compute initial numeric song index (never a function)
+  const getInitialIndex = () => {
     const stored = getStoredSongIndex();
     if (isLandingPage) {
-      // Rotate to next song on every page refresh
+      // Rotate to next song on every page reload
       const nextOnRefresh = (stored + 1) % SONG_FILES.length;
       try {
         localStorage.setItem('weddingSongIndex', String(nextOnRefresh));
@@ -61,11 +62,13 @@ export function useWeddingMusic({ autoStartIfActive = false, isLandingPage = fal
       return nextOnRefresh;
     }
     return stored;
-  });
+  };
 
-  const [currentSongIndex, setCurrentSongIndex] = useState(songIndexRef.current);
+  const initialIndex = getInitialIndex();
+  const songIndexRef = useRef(initialIndex);
+  const [currentSongIndex, setCurrentSongIndex] = useState(initialIndex);
 
-  // Save playback position before leaving the page
+  // Save playback state before unloading
   useEffect(() => {
     const handleBeforeUnload = () => {
       const audio = audioRef.current;
@@ -88,7 +91,10 @@ export function useWeddingMusic({ autoStartIfActive = false, isLandingPage = fal
     const audio = audioRef.current;
     if (!audio) return;
 
-    const safeIndex = (index + SONG_FILES.length) % SONG_FILES.length;
+    // Guarantee index is a valid integer number
+    const num = typeof index === 'number' && !isNaN(index) ? index : 0;
+    const safeIndex = ((num % SONG_FILES.length) + SONG_FILES.length) % SONG_FILES.length;
+
     songIndexRef.current = safeIndex;
     setCurrentSongIndex(safeIndex);
 
@@ -99,9 +105,7 @@ export function useWeddingMusic({ autoStartIfActive = false, isLandingPage = fal
     } catch {}
 
     const songUrl = getRootAssetUrl(SONG_FILES[safeIndex]);
-    if (audio.src !== songUrl && !audio.src.endsWith(encodeURI(SONG_FILES[safeIndex]))) {
-      audio.src = songUrl;
-    }
+    audio.src = songUrl;
 
     if (startTime > 0) {
       try {
@@ -115,18 +119,20 @@ export function useWeddingMusic({ autoStartIfActive = false, isLandingPage = fal
       await audio.play();
       setMusicPlaying(true);
     } catch (err) {
-      console.warn('Wedding music play deferred until interaction:', err.message);
+      console.warn('Wedding music play deferred until user interaction:', err.message);
       setMusicPlaying(false);
     }
   }, []);
 
   const playNextSong = useCallback(() => {
-    const nextIndex = (songIndexRef.current + 1) % SONG_FILES.length;
+    const currentIndex = typeof songIndexRef.current === 'number' ? songIndexRef.current : 0;
+    const nextIndex = (currentIndex + 1) % SONG_FILES.length;
     playSongAtIndex(nextIndex, 0);
   }, [playSongAtIndex]);
 
   const startMusic = useCallback(() => {
-    playSongAtIndex(songIndexRef.current, 0);
+    const currentIndex = typeof songIndexRef.current === 'number' ? songIndexRef.current : 0;
+    playSongAtIndex(currentIndex, 0);
   }, [playSongAtIndex]);
 
   const stopMusic = useCallback(() => {
@@ -153,17 +159,44 @@ export function useWeddingMusic({ autoStartIfActive = false, isLandingPage = fal
             sessionStorage.setItem('weddingMusicActive', 'true');
           } catch {}
         }).catch(() => {
-          playSongAtIndex(songIndexRef.current, 0);
+          startMusic();
         });
       } else {
-        playSongAtIndex(songIndexRef.current, 0);
+        startMusic();
       }
     }
-  }, [musicPlaying, playSongAtIndex, stopMusic]);
+  }, [musicPlaying, startMusic, stopMusic]);
 
-  // Handle song completion: automatically play next song
+  // Handle song completion: automatically play next song in playlist
   const handleSongEnded = useCallback(() => {
     playNextSong();
+  }, [playNextSong]);
+
+  const handleAudioError = useCallback(() => {
+    // If audio track fails, advance to next track automatically
+    playNextSong();
+  }, [playNextSong]);
+
+  // Attach direct DOM event listeners to guarantee catching ended and error events
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const onEnded = () => {
+      playNextSong();
+    };
+
+    const onError = () => {
+      playNextSong();
+    };
+
+    audio.addEventListener('ended', onEnded);
+    audio.addEventListener('error', onError);
+
+    return () => {
+      audio.removeEventListener('ended', onEnded);
+      audio.removeEventListener('error', onError);
+    };
   }, [playNextSong]);
 
   // Auto-start on pages like Accommodation if music was already active in the session
@@ -181,7 +214,8 @@ export function useWeddingMusic({ autoStartIfActive = false, isLandingPage = fal
     } catch {}
 
     if (wasActive) {
-      playSongAtIndex(songIndexRef.current, savedTime);
+      const idx = typeof songIndexRef.current === 'number' ? songIndexRef.current : 0;
+      playSongAtIndex(idx, savedTime);
     }
   }, [autoStartIfActive, playSongAtIndex]);
 
@@ -194,6 +228,7 @@ export function useWeddingMusic({ autoStartIfActive = false, isLandingPage = fal
     toggleMusic,
     playNextSong,
     handleSongEnded,
+    handleAudioError,
   };
 }
 
