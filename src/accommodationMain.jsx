@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/index.css';
-import Accommodation from './components/Accommodation';
+import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Accommodation />
+    <App initialRoute="accommodation" />
   </React.StrictMode>
 );
