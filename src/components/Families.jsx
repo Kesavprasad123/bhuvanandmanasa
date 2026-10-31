@@ -21,7 +21,7 @@ function Families() {
               &amp; Smt. Kotti Padma Tulasi
             </strong>
             <br />
-            <strong>Kotti Kesava Prasad (Brother)</strong>
+            <strong>Kotti Kesava Prasad (Younger)</strong>
           </div>
           <div className="ampersand">&amp;</div>
           <div className="person">
@@ -34,7 +34,7 @@ function Families() {
               &amp; Smt. Manyapu Sujatha (Late)
             </strong>
             <br />
-            <strong>Manyapu Harsha Vardhan (Brother)</strong>
+            <strong>Manyapu Harsha Vardhan (Younger)</strong>
           </div>
         </div>
         <br />
