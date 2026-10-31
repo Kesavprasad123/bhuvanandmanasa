@@ -234,7 +234,21 @@ function AvailabilityTable({ property, availabilityState, availability }) {
   );
 }
 
-const homeHref = import.meta.env.BASE_URL || './';
+/**
+ * Resolves the root wedding invitation URL from the current window location.
+ * Examples:
+ * - Domain root: /accommodation/ -> /
+ * - Domain root: /accommodation -> /
+ * - GitHub Pages subpath: /bhuvanmanasa/accommodation/ -> /bhuvanmanasa/
+ * - Dev server: http://localhost:5173/accommodation/ -> /
+ */
+export function getHomeHref() {
+  if (typeof window === 'undefined') return '/';
+  const pathname = window.location.pathname || '';
+  const parent = pathname.replace(/\/accommodation(?:\/.*)?$/i, '');
+  if (!parent || parent === '') return '/';
+  return parent.endsWith('/') ? parent : `${parent}/`;
+}
 
 const getStoredTheme = () => {
   try {
@@ -245,8 +259,20 @@ const getStoredTheme = () => {
 };
 
 function Accommodation() {
+  const [homeHref, setHomeHref] = useState(getHomeHref);
   const [isDark, setIsDark] = useState(getStoredTheme);
   const [selectedId, setSelectedId] = useState(propertyFromHash);
+
+  useEffect(() => {
+    setHomeHref(getHomeHref());
+  }, []);
+
+  const handleBackToInvitation = useCallback((e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    const target = getHomeHref();
+    window.location.assign(target);
+  }, []);
 
   // Live room counts, shared across devices through Supabase.
   const [availability, setAvailability] = useState(null);
@@ -408,7 +434,7 @@ function Accommodation() {
   return (
     <div className="acc-page">
       <header className="acc-topbar">
-        <a className="acc-home-link" href={homeHref}>
+        <a className="acc-home-link" href={homeHref} onClick={handleBackToInvitation}>
           ← Invitation
         </a>
         <div className="acc-topbar-actions">
@@ -580,7 +606,7 @@ function Accommodation() {
       <footer className="acc-footer">
         <Ornament />
         <p>Bhuvan &amp; Manasa · 12 December 2026</p>
-        <a className="acc-footer-link" href={homeHref}>
+        <a className="acc-footer-link" href={homeHref} onClick={handleBackToInvitation}>
           ← Back to the wedding invitation
         </a>
       </footer>
