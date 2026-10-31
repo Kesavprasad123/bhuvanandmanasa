@@ -37,17 +37,26 @@ const getStoredSongIndex = () => {
 };
 
 function App() {
-  const [isOpen, setIsOpen] = useState(() => {
-    try {
-      return sessionStorage.getItem('weddingInviteOpened') === 'true' || window.location.hash.length > 1;
-    } catch {
-      return false;
-    }
-  });
+  const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(getStoredTheme);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
   const songIndexRef = useRef(getStoredSongIndex());
+
+  // On every initial load and page refresh, guarantee landing on the opening envelope screen
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+    document.body.classList.add('locked');
+    try {
+      sessionStorage.removeItem('weddingInviteOpened');
+    } catch {}
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }, []);
 
   // Apply theme
   useEffect(() => {
@@ -58,6 +67,8 @@ function App() {
   useEffect(() => {
     if (isOpen) {
       document.body.classList.remove('locked');
+    } else {
+      document.body.classList.add('locked');
     }
   }, [isOpen]);
 
@@ -122,9 +133,6 @@ function App() {
 
   const handleOpenEnvelope = useCallback(() => {
     if (isOpen) return;
-    try {
-      sessionStorage.setItem('weddingInviteOpened', 'true');
-    } catch {}
     startMusic();
     setTimeout(() => {
       setIsOpen(true);

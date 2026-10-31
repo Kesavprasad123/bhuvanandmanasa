@@ -20,17 +20,17 @@ const STATIC_BLAST = [
 ];
 
 function Opening({ isOpen: siteOpen, onOpen }) {
-  const [envelopeOpen, setEnvelopeOpen] = useState(siteOpen);
-  const [exiting, setExiting] = useState(siteOpen);
-  const [hidden, setHidden] = useState(siteOpen);
+  const [envelopeOpen, setEnvelopeOpen] = useState(false);
+  const [exiting, setExiting] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [jsBlastParticles, setJsBlastParticles] = useState([]);
   const blastCreated = useRef(false);
 
   useEffect(() => {
-    if (siteOpen) {
+    if (siteOpen && !hidden) {
       setHidden(true);
     }
-  }, [siteOpen]);
+  }, [siteOpen, hidden]);
 
   const createEnvelopeBlast = useCallback(() => {
     if (blastCreated.current) return;
