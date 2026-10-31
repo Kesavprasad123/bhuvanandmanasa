@@ -7,11 +7,12 @@ function FeatureImage() {
     <section className="feature-section">
       <img
         src={featureImgSrc}
-        alt="Bhuvan and Manasa wedding celebration"
+        alt="Sita Rama Kalyanam - Sacred union of Bhuvan and Manasa"
         loading="lazy"
         decoding="async"
         width="1672"
         height="941"
+        sizes="100vw"
       />
       <div className="feature-overlay"></div>
       <div className="feature-copy reveal">

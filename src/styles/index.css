@@ -1561,8 +1561,9 @@
   }
 
   .feature-section {
-    height: 88svh;
-    min-height: 600px;
+    height: 82svh;
+    min-height: 520px;
+    max-height: 760px;
     position: relative;
     overflow: hidden;
   }
@@ -1570,26 +1571,31 @@
   .feature-section img {
     width: 100%;
     height: 100%;
-    object-fit: cover
+    object-fit: cover;
+    object-position: center bottom;
   }
 
   .feature-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(transparent 20%, rgba(39, 18, 18, .72))
+    background: linear-gradient(
+      180deg,
+      rgba(39, 18, 18, 0.45) 0%,
+      rgba(39, 18, 18, 0.12) 40%,
+      rgba(39, 18, 18, 0.55) 100%
+    );
   }
 
   .feature-copy {
     position: absolute;
     z-index: 2;
     left: 50%;
-    top: 50%;
-    ;
+    top: 42%;
     transform: translate(-50%, -50%);
     width: 90%;
     max-width: 1000px;
     text-align: center;
-    color: white
+    color: white;
   }
 
   .feature-copy p {
@@ -1625,34 +1631,51 @@
     transform: none;
   }
 
-  /* /* ---------- PHOTO COLLAGE ---------- */
+  /* ---------- PHOTO CELEBRATION GALLERY ---------- */
+
+  .gallery-lead {
+    font-size: clamp(14px, 2vw, 17px);
+    color: var(--gold-dark, #8a5a22);
+    font-style: italic;
+    max-width: 680px;
+    margin: 8px auto 0;
+    text-align: center;
+  }
 
   .photo-collage {
-    width: min(1150px, 94%);
+    width: min(1200px, 94%);
     margin: 45px auto 0;
-
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-rows: 220px;
-    gap: 14px;
-
-    grid-template-areas:
-      "one one two three"
-      "one one four four"
-      "five six four four"
-      "five seven eight eight";
+    grid-template-columns: repeat(6, 1fr);
+    gap: 18px;
   }
 
   .photo-collage .collage-item {
     position: relative;
     width: 100%;
-    height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    border-radius: 22px;
-    background: #eee;
-    box-shadow: 0 12px 35px rgba(63, 39, 27, .15);
+    border-radius: 20px;
+    background: #fdfaf6;
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    box-shadow: 0 10px 30px rgba(63, 39, 27, 0.12);
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    display: block;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.45s ease;
+  }
+
+  .photo-collage .collage-item:hover,
+  .photo-collage .collage-item:focus-visible {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(63, 39, 27, 0.22);
+    border-color: rgba(212, 175, 55, 0.9);
   }
 
   .photo-collage .collage-item img {
@@ -1661,119 +1684,445 @@
     height: 100%;
     max-width: none;
     object-fit: cover;
-    transition: transform .7s ease;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .photo-collage .collage-item:hover img {
-    transform: scale(1.06);
+  .photo-collage .collage-item:hover img,
+  .photo-collage .collage-item:focus-visible img {
+    transform: scale(1.05);
   }
 
-  /* Grid positions */
-
-  .photo-collage .item-1 {
-    grid-area: one
-  }
-
-  .photo-collage .item-2 {
-    grid-area: two
-  }
-
-  .photo-collage .item-3 {
-    grid-area: three
-  }
-
-  .photo-collage .item-4 {
-    grid-area: four
-  }
-
-  .photo-collage .item-5 {
-    grid-area: five
-  }
-
-  .photo-collage .item-6 {
-    grid-area: six
-  }
-
-  .photo-collage .item-7 {
-    grid-area: seven
-  }
-
-  .photo-collage .item-8 {
-    grid-area: eight
-  }
-
-  /* Elegant inner border */
-
+  /* Inner luxury border */
   .photo-collage .collage-item::after {
     content: "";
     position: absolute;
-    inset: 7px;
-    border: 1px solid rgba(255, 250, 244, .65);
-    border-radius: 17px;
+    inset: 8px;
+    border: 1px solid rgba(255, 250, 244, 0.6);
+    border-radius: 14px;
     pointer-events: none;
+    transition: border-color 0.4s ease;
   }
 
-
-  /* ---------- TABLET ---------- */
-
-  @media(max-width:900px) {
-
-    .photo-collage {
-      width: 94%;
-      grid-template-columns: repeat(4, 1fr);
-      grid-auto-rows: 170px;
-      gap: 5px;
-
-      grid-template-areas:
-        "one two two three"
-        "one four four three"
-        "five four four six"
-        "five seven seven eight";
-    }
-
+  .photo-collage .collage-item:hover::after,
+  .photo-collage .collage-item:focus-visible::after {
+    border-color: rgba(240, 215, 155, 0.95);
   }
 
+  /* Desktop Grid Spans & Aspect Ratios */
+  .photo-collage .collage-item.is-landscape {
+    grid-column: span 3;
+    aspect-ratio: 16 / 10;
+  }
 
-  /* ---------- MOBILE ---------- */
+  .photo-collage .collage-item.is-portrait {
+    grid-column: span 2;
+    aspect-ratio: 3 / 4;
+  }
 
-  @media(max-width:600px) {
+  /* Card Caption Overlay */
+  .collage-card-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 18px;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(24, 11, 18, 0.35) 0%,
+      rgba(24, 11, 18, 0.05) 35%,
+      rgba(24, 11, 18, 0.3) 65%,
+      rgba(24, 11, 18, 0.8) 100%
+    );
+    opacity: 0.92;
+    transition: opacity 0.35s ease;
+  }
 
+  .photo-collage .collage-item:hover .collage-card-overlay,
+  .photo-collage .collage-item:focus-visible .collage-card-overlay {
+    opacity: 1;
+  }
+
+  .collage-card-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .collage-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 11px;
+    border-radius: 20px;
+    background: rgba(45, 22, 22, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(224, 185, 115, 0.5);
+    color: #f7e6c4;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .collage-expand-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .photo-collage .collage-item:hover .collage-expand-btn,
+  .photo-collage .collage-item:focus-visible .collage-expand-btn {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .collage-caption {
+    color: #ffffff;
+    text-align: left;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+  }
+
+  .collage-title {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #fff9f0;
+    margin: 0;
+  }
+
+  .collage-subtitle {
+    font-size: 12px;
+    color: #f0cf91;
+    margin: 4px 0 0 0;
+    letter-spacing: 0.3px;
+  }
+
+  /* ---------- TABLET (max-width: 900px) ---------- */
+  @media(max-width: 900px) {
     .photo-collage {
       width: 94%;
       grid-template-columns: repeat(2, 1fr);
-      grid-auto-rows: 150px;
-      gap: 4px;
+      gap: 14px;
+    }
 
-      grid-template-areas:
-        "one one"
-        "one one"
-        "two three"
-        "four four"
-        "five six"
-        "seven eight";
+    .photo-collage .collage-item.is-landscape {
+      grid-column: span 2;
+      aspect-ratio: 16 / 10;
+    }
+
+    .photo-collage .collage-item.is-portrait {
+      grid-column: span 1;
+      aspect-ratio: 3 / 4;
+    }
+
+    /* Mobile / Tablet visual rhythm order */
+    .photo-collage .order-m-1 { order: 1; }
+    .photo-collage .order-m-2 { order: 2; }
+    .photo-collage .order-m-3 { order: 3; }
+    .photo-collage .order-m-4 { order: 4; }
+    .photo-collage .order-m-5 { order: 5; }
+    .photo-collage .order-m-6 { order: 6; }
+    .photo-collage .order-m-7 { order: 7; }
+    .photo-collage .order-m-8 { order: 8; }
+  }
+
+  /* ---------- MOBILE (max-width: 600px) ---------- */
+  @media(max-width: 600px) {
+    .photo-collage {
+      width: 95%;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 32px auto 0;
     }
 
     .photo-collage .collage-item {
-      border-radius: 12px;
+      border-radius: 14px;
     }
 
     .photo-collage .collage-item::after {
       inset: 5px;
-      border-radius: 9px;
+      border-radius: 10px;
     }
 
+    .photo-collage .collage-item.is-landscape {
+      grid-column: span 2;
+      aspect-ratio: 16 / 10;
+    }
+
+    .photo-collage .collage-item.is-portrait {
+      grid-column: span 1;
+      aspect-ratio: 3 / 4;
+    }
+
+    .collage-card-overlay {
+      padding: 10px 12px;
+    }
+
+    .collage-badge {
+      font-size: 9.5px;
+      padding: 3px 8px;
+    }
+
+    .collage-title {
+      font-size: 15px;
+    }
+
+    .collage-subtitle {
+      font-size: 10.5px;
+    }
+
+    .collage-expand-btn {
+      display: none;
+    }
   }
 
-
-  /* ---------- SMALL MOBILE ---------- */
-
-  @media(max-width:390px) {
-
+  /* ---------- SMALL MOBILE (max-width: 390px) ---------- */
+  @media(max-width: 390px) {
     .photo-collage {
-      grid-auto-rows: 125px;
-      gap: 4px;
+      gap: 8px;
     }
 
+    .collage-title {
+      font-size: 13.5px;
+    }
+
+    .collage-subtitle {
+      display: none;
+    }
+  }
+
+  /* ---------- FULLSCREEN GALLERY LIGHTBOX MODAL ---------- */
+  .gallery-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(18, 9, 13, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: lightboxFadeIn 0.25s ease;
+  }
+
+  @keyframes lightboxFadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .lightbox-dialog {
+    position: relative;
+    max-width: min(94vw, 1200px);
+    max-height: 94vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+  }
+
+  .lightbox-stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    max-height: 78vh;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+    border: 1px solid rgba(224, 185, 115, 0.35);
+    background: #14080e;
+  }
+
+  .lightbox-stage img {
+    display: block;
+    max-width: min(92vw, 1100px);
+    max-height: 76vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 14px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .lightbox-close-btn {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(45, 22, 22, 0.95);
+    border: 1.5px solid rgba(224, 185, 115, 0.65);
+    color: #ffffff;
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    transition: transform 0.25s ease, background-color 0.25s ease;
+    z-index: 10;
+  }
+
+  .lightbox-close-btn:hover,
+  .lightbox-close-btn:focus-visible {
+    transform: scale(1.1);
+    background: var(--wine, #8a2b3b);
+  }
+
+  .lightbox-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(45, 22, 22, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(224, 185, 115, 0.55);
+    color: #ffffff;
+    font-size: 26px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    transition: transform 0.25s ease, background 0.25s ease;
+    z-index: 5;
+  }
+
+  .lightbox-nav-btn:hover,
+  .lightbox-nav-btn:focus-visible {
+    transform: translateY(-50%) scale(1.1);
+    background: var(--wine, #8a2b3b);
+  }
+
+  .lightbox-prev-btn {
+    left: -24px;
+  }
+
+  .lightbox-next-btn {
+    right: -24px;
+  }
+
+  .lightbox-footer {
+    width: 100%;
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: #ffffff;
+  }
+
+  .lightbox-info {
+    text-align: left;
+  }
+
+  .lightbox-title {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    color: #fff9f0;
+    margin: 0;
+  }
+
+  .lightbox-subtitle {
+    font-size: 13.5px;
+    color: #e0b973;
+    margin: 2px 0 0;
+  }
+
+  .lightbox-counter {
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(224, 185, 115, 0.4);
+    color: #fff4db;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .gallery-lightbox {
+      padding: 12px;
+    }
+
+    .lightbox-dialog {
+      width: 100%;
+      max-height: 96vh;
+    }
+
+    .lightbox-stage {
+      max-height: 72vh;
+    }
+
+    .lightbox-stage img {
+      max-height: 70vh;
+      max-width: 96vw;
+    }
+
+    .lightbox-close-btn {
+      top: 8px;
+      right: 8px;
+      width: 38px;
+      height: 38px;
+      font-size: 20px;
+    }
+
+    .lightbox-nav-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+    }
+
+    .lightbox-prev-btn {
+      left: 6px;
+    }
+
+    .lightbox-next-btn {
+      right: 6px;
+    }
+
+    .lightbox-footer {
+      margin-top: 10px;
+    }
+
+    .lightbox-title {
+      font-size: 16px;
+    }
+
+    .lightbox-subtitle {
+      font-size: 11px;
+    }
+
+    .lightbox-counter {
+      padding: 4px 10px;
+      font-size: 11px;
+    }
   }
 
   .venue-card {
@@ -2152,8 +2501,17 @@
     }
 
     .feature-section {
-      height: 75svh;
-      min-height: 520px
+      height: clamp(380px, 60svh, 480px);
+      min-height: 380px;
+    }
+
+    .feature-section img {
+      object-fit: cover;
+      object-position: center bottom;
+    }
+
+    .feature-copy {
+      top: 36%;
     }
 
     .venue-card {
@@ -2185,12 +2543,6 @@
     padding-top: 14px;
     font-size: 11px;
     letter-spacing: 1px;
-  }
-
-  @media(max-width:390px) {
-    .photo-collage {
-      gap: 10px
-    }
   }
 
   /* =========================================================
@@ -2605,92 +2957,6 @@
 
   }
 
-
-  /* ==================================================
-   ADD THE NEW PHOTO FIT CODE HERE — AT THE VERY END
-   ================================================== */
-
-  /* Sideways photos */
-
-  .photo-collage .item-1 img {
-    transform: rotate(-90deg) scale(.78) !important;
-    object-position: center center;
-  }
-
-  .photo-collage .item-2 img {
-    transform: rotate(-90deg) scale(.78) !important;
-    object-position: center center;
-  }
-
-  .photo-collage .item-3 img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: rotate(-90deg) scale(.78) !important;
-    transform: scale(0.90);
-    object-position: center 25%;
-  }
-
-  .photo-collage .item-5 img {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-    transform: rotate(-90deg) scale(.78) !important;
-    transform: scale(0.90);
-    object-position: center 25%;
-  }
-
-  .photo-collage .item-6 img {
-    transform: rotate(-90deg) scale(.78) !important;
-    object-position: center center;
-  }
-
-  .photo-collage .item-7 img {
-    transform: rotate(-90deg) scale(.78) !important;
-    object-position: center center;
-  }
-
-
-  /* Correctly oriented photos */
-
-  .photo-collage .item-4 img,
-  .photo-collage .item-8 img {
-    transform: none !important;
-    object-position: center center;
-  }
-
-
-  /* ---------- HOVER ---------- */
-
-  .photo-collage .item-1:hover img,
-  .photo-collage .item-2:hover img,
-  .photo-collage .item-3:hover img,
-  .photo-collage .item-5:hover img,
-  .photo-collage .item-6:hover img,
-  .photo-collage .item-7:hover img {
-    transform: rotate(-90deg) scale(1) !important;
-  }
-
-  /* Keep positioning on hover */
-  .photo-collage .item-3:hover img {
-    transform: scale(0.94);
-  }
-
-  .photo-collage .item-5:hover img {
-    transform: scale(0.94);
-  }
-
-  /* ---------- CORRECTLY ORIENTED ---------- */
-
-  .photo-collage .item-4 img,
-  .photo-collage .item-8 img {
-    transform: none !important;
-  }
-
-  .photo-collage .item-4:hover img,
-  .photo-collage .item-8:hover img {
-    transform: scale(1.06) !important;
-  }
 
   /* =========================================================
    GOLD SCRATCH CARD & ROMANTIC REVEAL
@@ -3165,7 +3431,7 @@
 
     .photo-collage {
       width: min(1400px, 90%);
-      grid-auto-rows: 270px;
+      gap: 22px;
     }
 
     .venue-card {
@@ -3245,8 +3511,7 @@
 
     .photo-collage {
       width: min(1700px, 88%);
-      grid-auto-rows: 330px;
-      gap: 20px;
+      gap: 28px;
     }
 
     .venue-card {
@@ -3340,8 +3605,7 @@
 
     .photo-collage {
       width: min(2500px, 84%);
-      grid-auto-rows: 440px;
-      gap: 28px;
+      gap: 36px;
     }
 
     .envelope-button {
