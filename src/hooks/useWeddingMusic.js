@@ -87,6 +87,32 @@ export function useWeddingMusic({ autoStartIfActive = false, isLandingPage = fal
     };
   }, []);
 
+  // Continuously record playback position so transitions or refreshes can resume seamlessly
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    let lastSaved = 0;
+    const handleTimeUpdate = () => {
+      const now = Date.now();
+      if (now - lastSaved > 1000) {
+        lastSaved = now;
+        try {
+          if (!audio.paused) {
+            sessionStorage.setItem('weddingMusicActive', 'true');
+            sessionStorage.setItem('weddingSongIndex', String(songIndexRef.current));
+            sessionStorage.setItem('weddingSongTime', String(audio.currentTime || 0));
+          }
+        } catch {}
+      }
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, []);
+
   const playSongAtIndex = useCallback(async (index, startTime = 0) => {
     const audio = audioRef.current;
     if (!audio) return;

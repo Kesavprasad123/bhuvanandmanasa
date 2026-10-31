@@ -177,19 +177,35 @@ const getStoredTheme = () => {
   }
 };
 
-function Accommodation() {
+function Accommodation({
+  musicPlaying: externalMusicPlaying,
+  onToggleMusic: externalToggleMusic,
+  isDark: externalIsDark,
+  onToggleTheme: externalToggleTheme,
+  onBackToInvitation,
+} = {}) {
   const [homeHref, setHomeHref] = useState(getHomeHref);
-  const [isDark, setIsDark] = useState(getStoredTheme);
+  const [internalDark, setInternalDark] = useState(getStoredTheme);
   const [selectedId, setSelectedId] = useState(propertyFromHash);
 
-  // Background music handover
-  const {
-    audioRef,
-    musicPlaying,
-    toggleMusic,
-    handleSongEnded,
-    handleAudioError,
-  } = useWeddingMusic({ autoStartIfActive: true });
+  const isDark = externalIsDark !== undefined ? externalIsDark : internalDark;
+  const toggleTheme =
+    externalToggleTheme ||
+    (() => {
+      setInternalDark((prev) => {
+        const next = !prev;
+        try {
+          localStorage.setItem('weddingTheme', next ? 'dark' : 'light');
+        } catch {}
+        return next;
+      });
+    });
+
+  // Background music handover: if parent provides external controls, use them!
+  const localMusic = useWeddingMusic({ autoStartIfActive: !externalToggleMusic });
+  const musicPlaying = externalMusicPlaying !== undefined ? externalMusicPlaying : localMusic.musicPlaying;
+  const toggleMusic = externalToggleMusic || localMusic.toggleMusic;
+  const audioRef = localMusic.audioRef;
 
   useEffect(() => {
     setHomeHref(getHomeHref());
@@ -199,17 +215,21 @@ function Accommodation() {
     (e) => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
-      const audio = audioRef.current;
-      if (audio && !audio.paused) {
-        try {
-          sessionStorage.setItem('weddingMusicActive', 'true');
-          sessionStorage.setItem('weddingSongTime', String(audio.currentTime || 0));
-        } catch {}
+      if (onBackToInvitation) {
+        onBackToInvitation();
+      } else {
+        const audio = audioRef.current;
+        if (audio && !audio.paused) {
+          try {
+            sessionStorage.setItem('weddingMusicActive', 'true');
+            sessionStorage.setItem('weddingSongTime', String(audio.currentTime || 0));
+          } catch {}
+        }
+        const target = getHomeHref();
+        window.location.assign(target);
       }
-      const target = getHomeHref();
-      window.location.assign(target);
     },
-    [audioRef]
+    [onBackToInvitation, audioRef]
   );
 
   // Availability state
@@ -339,12 +359,14 @@ function Accommodation() {
 
   return (
     <div className="acc-page">
-      <audio
-        ref={audioRef}
-        onEnded={handleSongEnded}
-        onError={handleAudioError}
-        preload="none"
-      />
+      {!externalToggleMusic && (
+        <audio
+          ref={audioRef}
+          onEnded={localMusic.handleSongEnded}
+          onError={localMusic.handleAudioError}
+          preload="none"
+        />
+      )}
       <MusicToggle playing={musicPlaying} onToggle={toggleMusic} />
 
       {/* Top Bar Navigation */}
@@ -400,15 +422,7 @@ function Accommodation() {
             type="button"
             aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
             aria-pressed={String(isDark)}
-            onClick={() =>
-              setIsDark((prev) => {
-                const next = !prev;
-                try {
-                  localStorage.setItem('weddingTheme', next ? 'dark' : 'light');
-                } catch {}
-                return next;
-              })
-            }
+            onClick={toggleTheme}
           >
             {isDark ? '☀' : '☾'}
           </button>

@@ -11,13 +11,23 @@ import Venue from './Venue';
 import FinalSection from './FinalSection';
 import Footer from './Footer';
 
-function MainInvitation({ musicPlaying, onToggleMusic, isDark, onToggleTheme }) {
+function MainInvitation({
+  musicPlaying,
+  onToggleMusic,
+  isDark,
+  onToggleTheme,
+  onNavigateToAccommodation,
+}) {
   useScrollReveal(true);
 
   return (
     <main id="site">
       <MusicToggle playing={musicPlaying} onToggle={onToggleMusic} />
-      <FloatingNav isDark={isDark} onToggleTheme={onToggleTheme} />
+      <FloatingNav
+        isDark={isDark}
+        onToggleTheme={onToggleTheme}
+        onNavigateToAccommodation={onNavigateToAccommodation}
+      />
       <Hero />
       <Countdown />
       <Families />
