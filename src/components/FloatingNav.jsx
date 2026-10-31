@@ -1,12 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const BASE = import.meta.env.BASE_URL || './';
-const cleanBase = BASE.endsWith('/') ? BASE : `${BASE}/`;
-const accommodationHref = `${cleanBase}accommodation/`;
+export function getAccommodationHref() {
+  if (typeof window === 'undefined') return '/accommodation/';
+  const pathname = window.location.pathname || '';
+  const cleanPath = pathname.replace(/\/index\.html$/i, '').replace(/\/$/, '');
+  return `${cleanPath}/accommodation/`;
+}
 
 function FloatingNav({ isDark, onToggleTheme }) {
   const [open, setOpen] = useState(false);
+  const [accommodationHref, setAccommodationHref] = useState(getAccommodationHref);
   const navRef = useRef(null);
+
+  useEffect(() => {
+    setAccommodationHref(getAccommodationHref());
+  }, []);
 
   // Smooth-scroll only for in-page anchors; full-page links such as
   // /accommodation must fall through to normal navigation.

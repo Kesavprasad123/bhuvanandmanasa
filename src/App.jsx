@@ -37,7 +37,13 @@ const getStoredSongIndex = () => {
 };
 
 function App() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(() => {
+    try {
+      return sessionStorage.getItem('weddingInviteOpened') === 'true' || window.location.hash.length > 1;
+    } catch {
+      return false;
+    }
+  });
   const [isDark, setIsDark] = useState(getStoredTheme);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const audioRef = useRef(null);
@@ -116,6 +122,9 @@ function App() {
 
   const handleOpenEnvelope = useCallback(() => {
     if (isOpen) return;
+    try {
+      sessionStorage.setItem('weddingInviteOpened', 'true');
+    } catch {}
     startMusic();
     setTimeout(() => {
       setIsOpen(true);
