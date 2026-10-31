@@ -1,6 +1,6 @@
 /* =========================================================
-   Room booking status — LED lights, host access bar and
-   wedding-themed PIN popup. Shares the invitation's tokens.
+   Room booking status — LED lights, host access bar,
+   keypad PIN modal, and dynamic room allocation dialogs.
    ========================================================= */
 
 /* ---------- status LED + label ---------- */
@@ -10,11 +10,15 @@
   gap: 8px;
 }
 
+.acc-status.is-compact {
+  gap: 5px;
+}
+
 .acc-led {
   position: relative;
   flex: 0 0 auto;
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: #b9b1a7;
   border: 1px solid rgba(0, 0, 0, .18);
@@ -27,22 +31,22 @@
   position: absolute;
   top: 1.5px;
   left: 2.5px;
-  width: 4px;
-  height: 4px;
+  width: 3.5px;
+  height: 3.5px;
   border-radius: 50%;
   background: rgba(255, 255, 255, .7);
 }
 
 .acc-led.is-booked {
-  background: #d64545;
-  border-color: #a52b2b;
-  box-shadow: 0 0 8px rgba(214, 69, 69, .75), inset 0 1px 2px rgba(255, 255, 255, .45);
+  background: #c2651b;
+  border-color: #8f460d;
+  box-shadow: 0 0 8px rgba(194, 101, 27, .75), inset 0 1px 2px rgba(255, 255, 255, .45);
 }
 
 .acc-led.is-free {
-  background: #46b074;
-  border-color: #2f7d51;
-  box-shadow: 0 0 8px rgba(70, 176, 116, .7), inset 0 1px 2px rgba(255, 255, 255, .45);
+  background: #2f7d51;
+  border-color: #1e5536;
+  box-shadow: 0 0 8px rgba(47, 125, 81, .7), inset 0 1px 2px rgba(255, 255, 255, .45);
 }
 
 .acc-led.is-unknown {
@@ -53,376 +57,56 @@
 
 .acc-status-text {
   font-family: "Playfair Display", serif;
-  font-size: 12.5px;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  color: var(--sage-dark);
-  white-space: nowrap;
-}
-
-/* ---------- table cells ---------- */
-.acc-room-cell {
-  white-space: nowrap;
-}
-
-/* ---------- booking status pill ---------- */
-.acc-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid transparent;
-  font-family: "Playfair Display", serif;
   font-size: 12px;
-  letter-spacing: 1.4px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
+  color: var(--sage-dark);
   white-space: nowrap;
 }
 
-.acc-pill:before {
-  content: "";
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: .85;
-}
-
-.acc-pill.is-active {
-  color: #b03434;
-  background: rgba(214, 69, 69, .12);
-  border-color: rgba(214, 69, 69, .5);
-}
-
-.acc-pill.is-cancelled {
-  color: var(--sage-dark);
-  background: rgba(120, 110, 100, .12);
-  border-color: rgba(120, 110, 100, .4);
-}
-
-/* ---------- row actions ---------- */
-.acc-actions-cell {
-  white-space: nowrap;
-}
-
-.acc-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.acc-action-btn {
-  padding: 7px 14px;
-  border-radius: 18px;
-  border: 1px solid #d3bfa0;
-  background: transparent;
-  color: var(--ink);
-  font-family: "Playfair Display", serif;
-  font-size: 13px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: background .25s ease, color .25s ease, border-color .25s ease, transform .2s ease;
-}
-
-.acc-action-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-.acc-action-btn:disabled {
-  opacity: .55;
-  cursor: wait;
-}
-
-.acc-action-btn:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-}
-
-.acc-action-btn.is-edit:hover {
-  background: #f1dfd5;
-}
-
-.acc-action-btn.is-danger {
-  border-color: #dcaeae;
-  color: #a52b2b;
-}
-
-.acc-action-btn.is-danger:hover {
-  background: rgba(214, 69, 69, .12);
-}
-
-.acc-action-btn.is-success {
-  border-color: #9ecdb2;
-  color: #2f7d51;
-}
-
-.acc-action-btn.is-success:hover {
-  background: rgba(70, 176, 116, .14);
-}
-
-.acc-action-btn.is-delete {
-  border-color: #dcaeae;
-  color: #a52b2b;
-}
-
-.acc-action-btn.is-delete:hover {
-  background: rgba(214, 69, 69, .12);
-}
-
-.acc-action-btn.is-unblock {
-  border-color: #d3bfa0;
-  color: var(--sage-dark, #5c6b52);
-}
-
-.acc-action-btn.is-unblock:hover:not(:disabled) {
-  background: #f1dfd5;
-}
-
-/* Room tiles wrap so a booked room's Unblocked button sits on its own row. */
-.acc-room-tile .acc-room-action {
-  flex: 1 1 100%;
-  justify-content: center;
-}
-
-/* ---------- primary action button (Add Booking) ---------- */
-.acc-admin-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px 22px;
-  border-radius: 26px;
-  border: 1px solid var(--gold);
-  background: var(--paper);
-  color: var(--wine);
-  font-family: "Playfair Display", serif;
-  font-size: 15px;
-  letter-spacing: 1.4px;
-  cursor: pointer;
-  transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
-}
-
-.acc-admin-button:hover {
-  background: var(--gold-light);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(80, 45, 15, .18);
-}
-
-.acc-admin-button:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
-}
-
-.acc-status-error {
-  margin: 0 0 14px;
-  font-size: 16px;
-  color: var(--wine);
-}
-
-/* ---------- host dashboard ---------- */
-.acc-dash-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.acc-dash-title-block h2 {
-  margin: 0;
-  font-family: "Playfair Display", serif;
-  font-weight: 600;
-  font-size: clamp(28px, 4.6vw, 40px);
-  line-height: 1.15;
-  color: var(--wine);
-}
-
-.acc-dash-sub {
-  margin: 8px 0 0;
-  max-width: 540px;
-  font-size: 16.5px;
-  line-height: 1.5;
-  color: var(--ink);
-  opacity: .88;
-}
-
-.acc-dash-head-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.acc-dash-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.acc-dash-chips {
-  margin-top: 0;
-}
-
-/* property filter */
-.acc-tabs {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.acc-tab {
-  padding: 10px 24px;
-  border-radius: 26px;
-  border: 1px solid #d3bfa0;
-  background: transparent;
-  color: var(--ink);
-  font-family: "Playfair Display", serif;
-  font-size: 14.5px;
-  letter-spacing: 1.4px;
-  cursor: pointer;
-  transition: background .25s ease, color .25s ease, border-color .25s ease, transform .2s ease;
-}
-
-.acc-tab:hover {
-  transform: translateY(-2px);
-  background: #f1dfd5;
-}
-
-.acc-tab.active {
-  background: linear-gradient(145deg, #8e3045, #6f273b);
-  border-color: #6f273b;
-  color: #fff8ef;
-}
-
-.acc-tab:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
-}
-
-/* per-room lights */
-.acc-rooms-panel {
-  margin-top: clamp(16px, 2.5vw, 22px);
-}
-
-.acc-room-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
-  gap: 12px;
-}
-
-.acc-room-tile {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px 14px;
-  background: var(--cream);
-  border: 1px solid #e0cdad;
-  border-radius: 16px;
-  min-width: 0;
-}
-
-.acc-room-tile .acc-status {
-  min-width: 0;
-}
-
-.acc-room-tile .acc-status-text {
-  font-size: 11.5px;
-  letter-spacing: 1.1px;
-}
-
-/* toolbar: search + status filter + add */
-.acc-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: clamp(16px, 2.5vw, 22px);
-  margin-bottom: 18px;
-}
-
-.acc-toolbar .acc-search {
-  flex: 1 1 250px;
-}
-
-.acc-select {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 11px 18px;
-  background: var(--cream);
-  border: 1px solid #e0cdad;
-  border-radius: 30px;
-  transition: border-color .25s ease, box-shadow .25s ease;
-}
-
-.acc-select:focus-within {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(189, 138, 66, .22);
-}
-
-.acc-select-label {
-  font-family: "Playfair Display", serif;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--sage-dark);
-  font-weight: 600;
-}
-
-.acc-select select {
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--ink);
-  font-family: "Playfair Display", serif;
-  font-size: 14.5px;
-  letter-spacing: 1px;
-  cursor: pointer;
-}
-
-/* ---------- PIN popup ---------- */
+/* ---------- Modal Backdrop & Base Modal ---------- */
 .acc-modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 300;
   display: grid;
   place-items: center;
-  padding: 20px;
-  background: rgba(65, 38, 29, .58);
-  backdrop-filter: blur(6px);
+  padding: 16px;
+  background: rgba(45, 26, 20, .68);
+  backdrop-filter: blur(8px);
   animation: acc-fade-in .25s ease;
+  overflow-y: auto;
 }
 
 .acc-modal {
   position: relative;
-  width: min(430px, 100%);
-  padding: 34px 30px 28px;
+  width: min(440px, 100%);
+  padding: 32px 28px 26px;
   text-align: center;
   background: var(--paper);
   border: 1px solid var(--gold);
   border-radius: 26px;
   box-shadow: 0 30px 70px rgba(0, 0, 0, .35);
   animation: acc-pop-in .3s cubic-bezier(.2, .8, .3, 1);
+  margin: auto;
+}
+
+.acc-modal.is-wide {
+  width: min(580px, 100%);
 }
 
 .acc-modal:before {
   content: "";
   position: absolute;
   inset: 8px;
-  border: 1px solid rgba(189, 138, 66, .4);
+  border: 1px solid rgba(189, 138, 66, .35);
   border-radius: 19px;
   pointer-events: none;
 }
 
 .acc-modal-ornament {
   display: block;
-  font-size: 24px;
+  font-size: 26px;
   color: var(--gold);
   line-height: 1;
 }
@@ -431,14 +115,14 @@
   margin: 8px 0 0;
   font-family: "Playfair Display", serif;
   font-weight: 600;
-  font-size: clamp(24px, 5vw, 30px);
+  font-size: clamp(22px, 4.5vw, 28px);
   color: var(--wine);
 }
 
 .acc-modal-copy {
-  margin: 10px auto 20px;
-  max-width: 330px;
-  font-size: 16.5px;
+  margin: 8px auto 18px;
+  max-width: 380px;
+  font-size: 15px;
   line-height: 1.5;
   color: var(--ink);
   opacity: .9;
@@ -447,93 +131,249 @@
 .acc-modal-form {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 16px;
-}
-
-.acc-pin-input {
-  width: 180px;
-  padding: 14px 12px;
-  text-align: center;
-  font-family: "Playfair Display", serif;
-  font-size: 28px;
-  letter-spacing: 14px;
-  text-indent: 14px;
-  color: var(--wine);
-  background: var(--cream);
-  border: 1px solid #dcc7a4;
-  border-radius: 16px;
-  outline: none;
-  transition: border-color .25s ease, box-shadow .25s ease;
-}
-
-.acc-pin-input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(189, 138, 66, .25);
-}
-
-.acc-pin-input.has-error {
-  border-color: var(--wine);
-  animation: acc-shake .38s ease;
-}
-
-.acc-modal-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.acc-pin-submit {
-  margin-top: 0;
-  padding: 13px 30px;
-}
-
-.acc-pin-submit:disabled,
-.acc-modal-actions .acc-ghost-button:disabled {
-  opacity: .6;
-  cursor: progress;
+  width: 100%;
 }
 
 .acc-modal-note {
-  margin: 18px 0 0;
-  font-size: 13.5px;
+  margin: 16px 0 0;
+  font-size: 13px;
   font-style: italic;
   color: var(--sage-dark);
 }
 
-/* ---------- booking form popup ---------- */
-.acc-modal.is-wide {
-  width: min(560px, 100%);
-  text-align: center;
+/* ---------- 4-Digit PIN Display & Tactile Keypad ---------- */
+.acc-pin-display {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 10px 0 16px;
 }
 
+.acc-pin-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #dcc7a4;
+  background: var(--cream);
+  transition: all .2s cubic-bezier(.2, .8, .3, 1);
+}
+
+.acc-pin-dot.is-filled {
+  background: var(--wine);
+  border-color: var(--gold);
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(125, 44, 64, .4);
+}
+
+.acc-pin-dot.is-error {
+  border-color: #a52b2b;
+  background: rgba(214, 69, 69, .2);
+  animation: acc-shake .38s ease;
+}
+
+.acc-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: min(260px, 100%);
+  margin: 0 auto 12px;
+}
+
+.acc-keypad-btn {
+  height: 52px;
+  border-radius: 16px;
+  border: 1px solid #dcc7a4;
+  background: var(--cream);
+  color: var(--wine);
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(65, 38, 29, .06);
+  transition: transform .15s ease, background .15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.acc-keypad-btn:active {
+  transform: scale(.94);
+  background: #ecd5c2;
+}
+
+.acc-keypad-btn.is-action {
+  font-size: 14px;
+  letter-spacing: .5px;
+  color: var(--sage-dark);
+}
+
+/* ---------- Header Badges in Allocation Modal ---------- */
+.acc-modal-header-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.acc-room-badge.is-large {
+  font-family: "Playfair Display", serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 14px;
+  background: var(--wine);
+  color: #fff8ee;
+  letter-spacing: 1px;
+}
+
+.acc-property-badge {
+  font-family: "Playfair Display", serif;
+  font-size: 13px;
+  color: var(--sage-dark);
+  letter-spacing: .8px;
+}
+
+/* ---------- Occupancy Status Toggle Switch ---------- */
+.acc-status-toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.acc-field-label {
+  font-family: "Playfair Display", serif;
+  font-size: 11.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--sage-dark);
+  font-weight: 600;
+}
+
+.acc-toggle-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: var(--cream);
+  padding: 4px;
+  border-radius: 16px;
+  border: 1px solid #e0cdad;
+}
+
+.acc-toggle-btn {
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: "Playfair Display", serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
+
+.acc-toggle-btn.is-active-occupied {
+  background: #c2651b;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(194, 101, 27, .3);
+}
+
+.acc-toggle-btn.is-active-available {
+  background: #2f7d51;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(47, 125, 81, .3);
+}
+
+/* ---------- Date Presets Chips ---------- */
+.acc-presets-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.acc-date-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.acc-preset-chip {
+  padding: 7px 12px;
+  border-radius: 14px;
+  border: 1px solid #dcc7a4;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "Playfair Display", serif;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all .2s ease;
+  min-height: 38px;
+}
+
+.acc-preset-chip:hover {
+  background: #ecd5c2;
+}
+
+.acc-preset-chip.is-selected {
+  background: var(--wine);
+  color: #fff8ee;
+  border-color: var(--wine);
+}
+
+/* ---------- Static Timings Box ---------- */
+.acc-static-timings-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: var(--cream);
+  border: 1px dashed #dcc7a4;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.acc-timings-badge strong {
+  color: var(--wine);
+}
+
+/* ---------- Form Fields ---------- */
 .acc-booking-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  text-align: left;
 }
 
 .acc-form-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  text-align: left;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 .acc-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 0;
 }
 
 .acc-field label {
   font-family: "Playfair Display", serif;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--sage-dark);
 }
@@ -541,20 +381,16 @@
 .acc-field input,
 .acc-field select {
   width: 100%;
-  padding: 12px 14px;
+  padding: 11px 14px;
   border: 1px solid #dcc7a4;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--cream);
   color: var(--ink);
-  font-family: "Cormorant Garamond", serif;
-  font-size: 17px;
+  font-family: "Playfair Display", serif;
+  font-size: 15px;
+  min-height: 44px;
   outline: none;
-  transition: border-color .25s ease, box-shadow .25s ease;
-}
-
-.acc-field input::placeholder {
-  color: var(--ink);
-  opacity: .55;
+  transition: border-color .2s ease, box-shadow .2s ease;
 }
 
 .acc-field input:focus,
@@ -563,214 +399,114 @@
   box-shadow: 0 0 0 3px rgba(189, 138, 66, .22);
 }
 
-.acc-field input[aria-invalid="true"],
-.acc-field select[aria-invalid="true"] {
-  border-color: var(--wine);
+/* ---------- Modal Action Buttons ---------- */
+.acc-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
 }
 
-.acc-field-error {
+.acc-danger-button {
+  padding: 10px 18px;
+  border-radius: 22px;
+  border: 1px solid #dcaeae;
+  background: rgba(214, 69, 69, .08);
+  color: #a52b2b;
+  font-family: "Playfair Display", serif;
+  font-size: 13.5px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: all .2s ease;
+}
+
+.acc-danger-button:hover {
+  background: rgba(214, 69, 69, .18);
+  border-color: #b03434;
+}
+
+.acc-error {
+  color: #b03434;
   font-size: 14px;
-  font-style: italic;
-  color: var(--wine);
+  margin: 4px 0 0;
 }
 
-.acc-booking-form .acc-error {
-  margin: 0;
-  text-align: center;
-}
-
-/* ---------- confirm popup ---------- */
-.acc-confirm-button {
-  padding: 13px 26px;
-}
-
+/* ---------- Keyframe Animations ---------- */
 @keyframes acc-fade-in {
-  from { opacity: 0 }
-  to { opacity: 1 }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes acc-pop-in {
-  from { opacity: 0; transform: translateY(14px) scale(.96) }
-  to { opacity: 1; transform: none }
+  from { opacity: 0; transform: translateY(16px) scale(.96); }
+  to { opacity: 1; transform: none; }
 }
 
-/* ---------- dark theme ---------- */
-body.dark-theme .acc-admin-button {
-  background: #2c262a;
-  color: var(--gold-light);
+@keyframes acc-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
 }
 
-body.dark-theme .acc-admin-button:hover {
-  background: #453a30;
+/* ---------- Dark Theme Overrides for Controls ---------- */
+body.dark-theme .acc-modal {
+  background: #25201c;
+  border-color: rgba(189, 138, 66, .4);
+  color: #f1e9dd;
 }
 
-body.dark-theme .acc-led {
-  border-color: rgba(0, 0, 0, .4);
+body.dark-theme .acc-modal h2 {
+  color: #e9cf9d;
 }
 
-body.dark-theme .acc-pin-input {
-  background: #2c262a;
-  border-color: #6c5a44;
-  color: var(--gold-light);
+body.dark-theme .acc-modal-copy {
+  color: #d8cec1;
 }
 
-body.dark-theme .acc-room-tile,
-body.dark-theme .acc-select {
-  background: #2c262a;
-  border-color: #6c5a44;
+body.dark-theme .acc-pin-dot {
+  background: #1b1715;
+  border-color: rgba(189, 138, 66, .3);
 }
 
-body.dark-theme .acc-tab:hover {
-  background: #49313b;
+body.dark-theme .acc-keypad-btn {
+  background: #1b1715;
+  border-color: rgba(189, 138, 66, .3);
+  color: #e9cf9d;
 }
 
-body.dark-theme .acc-action-btn.is-edit:hover {
-  background: #49313b;
+body.dark-theme .acc-keypad-btn:active {
+  background: #332a24;
 }
 
-body.dark-theme .acc-action-btn.is-danger {
-  color: #ef9a9a;
-  border-color: #7a4a4a;
-}
-
-body.dark-theme .acc-action-btn.is-danger:hover {
-  background: rgba(214, 69, 69, .16);
-}
-
-body.dark-theme .acc-action-btn.is-success {
-  color: #7fd0a0;
-  border-color: #46785c;
-}
-
-body.dark-theme .acc-action-btn.is-success:hover {
-  background: rgba(70, 176, 116, .16);
-}
-
-body.dark-theme .acc-action-btn.is-delete {
-  color: #ef9a9a;
-  border-color: #7a4a4a;
-}
-
-body.dark-theme .acc-action-btn.is-delete:hover {
-  background: rgba(214, 69, 69, .16);
-}
-
-body.dark-theme .acc-action-btn.is-unblock {
-  color: var(--gold-light, #e9cf9d);
-  border-color: #6c5a44;
-}
-
-body.dark-theme .acc-action-btn.is-unblock:hover:not(:disabled) {
-  background: #49313b;
-}
-
-body.dark-theme .acc-pill.is-active {
-  color: #ef9a9a;
-  background: rgba(214, 69, 69, .16);
-  border-color: rgba(214, 69, 69, .45);
-}
-
-body.dark-theme .acc-pill.is-cancelled {
-  color: var(--sage-dark);
-  background: rgba(200, 190, 180, .1);
-  border-color: rgba(200, 190, 180, .3);
-}
-
+body.dark-theme .acc-toggle-switch,
+body.dark-theme .acc-static-timings-box,
+body.dark-theme .acc-preset-chip,
 body.dark-theme .acc-field input,
 body.dark-theme .acc-field select {
-  background: #2c262a;
-  border-color: #6c5a44;
-  color: var(--ink);
-  color-scheme: dark;
+  background: #1b1715;
+  border-color: rgba(189, 138, 66, .25);
+  color: #f1e9dd;
 }
 
-body.dark-theme .acc-field input::placeholder {
-  color: var(--ink);
+body.dark-theme .acc-timings-badge strong {
+  color: #e9cf9d;
 }
 
-/* ---------- responsive ---------- */
-@media (max-width: 720px) {
-  .acc-dash-head {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .acc-dash-head-actions {
-    justify-content: flex-start;
-  }
-
-  .acc-dash-controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .acc-tabs,
-  .acc-dash-chips {
-    justify-content: center;
-  }
-
-  .acc-toolbar .acc-search {
-    flex: 1 1 100%;
-  }
-
-  .acc-select {
-    flex: 1 1 auto;
-    justify-content: center;
-  }
-
-  .acc-toolbar .acc-admin-button {
-    flex: 1 1 auto;
-    justify-content: center;
-  }
-
-  .acc-admin-button {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
+/* ---------- Responsive ---------- */
+@media (max-width: 520px) {
   .acc-modal {
-    padding: 28px 20px 24px;
+    padding: 24px 18px 20px;
   }
-
-  .acc-pin-input {
-    width: 100%;
-    max-width: 220px;
-  }
-
-  .acc-status-text {
-    font-size: 11.5px;
-    letter-spacing: 1px;
-  }
-
   .acc-form-grid {
     grid-template-columns: 1fr;
   }
-
-  .acc-room-strip {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  .acc-modal-actions {
+    flex-direction: column;
+    width: 100%;
   }
-
-  .acc-room-tile {
-    flex-wrap: wrap;
-  }
-}
-
-/* ---------- reduced motion ---------- */
-@media (prefers-reduced-motion: reduce) {
-  .acc-led,
-  .acc-tab,
-  .acc-action-btn,
-  .acc-admin-button,
-  .acc-pin-input,
-  .acc-field input,
-  .acc-field select {
-    transition: none;
-  }
-
-  .acc-modal-backdrop,
-  .acc-modal,
-  .acc-pin-input.has-error {
-    animation: none;
+  .acc-modal-actions button {
+    width: 100%;
   }
 }
