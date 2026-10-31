@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 /* ---------------------------------------------------------------
    Gold scratch card — HTML5 canvas coating over the hidden date.
-   Scratching away ~35% of the foil auto-reveals the surprise.
+   Scratching away ~20% of the foil auto-reveals the surprise.
 ----------------------------------------------------------------*/
 
-const REVEAL_THRESHOLD = 0.35; // reveal once 35% of the foil is scratched
-const CHECK_INTERVAL = 150; // ms between progress samples
+const REVEAL_THRESHOLD = 0.20; // reveal once 20% of the foil is scratched (20-25% threshold)
+const CHECK_INTERVAL = 80; // ms between progress samples for responsive auto-reveal
 const CARD_TEXT = '!! scratch here !!';
 const BURST_LIFETIME = 3600; // ms celebration particles stay on screen
 
@@ -335,7 +335,7 @@ function ScratchCard({ onRevealed }) {
 
   /* ---------- pointer helpers ---------- */
   const brushRatio = (width) =>
-    Math.max(20, Math.min(48, width * 0.065)) / Math.max(width, 1);
+    Math.max(24, Math.min(52, width * 0.075)) / Math.max(width, 1);
 
   const toLocal = (event) => {
     const canvas = canvasRef.current;
