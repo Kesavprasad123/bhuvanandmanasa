@@ -922,3 +922,36 @@ body.dark-theme .acc-room-badge {
     transition: none;
   }
 }
+
+/* =========================================================
+   GLOBAL MULTI-DEVICE & SCREEN COMPATIBILITY
+   iOS, Android, 4K, 8K, 43" & 55" Displays
+   ========================================================= */
+
+@supports (padding: max(0px)) {
+  .acc-topbar {
+    padding-top: max(14px, env(safe-area-inset-top, 14px));
+    padding-left: max(20px, env(safe-area-inset-left, 20px));
+    padding-right: max(20px, env(safe-area-inset-right, 20px));
+  }
+}
+
+@media (min-width: 1921px) {
+  .acc-inner {
+    width: min(1400px, 90%);
+  }
+}
+
+@media (min-width: 2560px) {
+  .acc-inner {
+    width: min(1700px, 86%);
+  }
+
+  .acc-cards {
+    gap: 36px;
+  }
+
+  .acc-card-body {
+    padding: 35px 35px 40px;
+  }
+}

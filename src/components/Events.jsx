@@ -17,13 +17,17 @@ import { useState, useEffect, useRef, useCallback } from 'react';
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
+const BASE = import.meta.env.BASE_URL || './';
+const cleanBase = BASE.endsWith('/') ? BASE : `${BASE}/`;
+const asset = (p) => `${cleanBase}${p.replace(/^\/+/, '')}`;
+
 const EVENTS = [
   {
     number: '01',
     title: 'Pelli Koduku',
     teluguTitle: 'పెళ్ళికొడుకు',
     subtitle: 'Groom to be • A traditional beginning filled with auspicious blessings',
-    image: '/assets/pellikoduku.webp',
+    image: asset('assets/pellikoduku.webp'),
     time: '09:00 AM',
     date: '10-12-2026',
     venue: 'Vihari Nivas - Rajamahendravaram',
@@ -36,7 +40,7 @@ const EVENTS = [
     title: 'Pelli Kuturu',
     teluguTitle: 'పెళ్ళికూతురు',
     subtitle: 'Bride to be • Mangalasnanam, floral radiant rites & family affection',
-    image: '/assets/pellikuthuru.webp',
+    image: asset('assets/pellikuthuru.webp'),
     time: '09:00 AM',
     date: '10-12-2026',
     venue: 'Avinya Banquet & Suits',
@@ -49,7 +53,7 @@ const EVENTS = [
     title: "Haldi (Groom's)",
     teluguTitle: "హల్దీ వేడుక (వరుడు)",
     subtitle: 'Turmeric showers, cheerful laughter, yellow hues & celebration',
-    image: '/assets/haldi.webp',
+    image: asset('assets/haldi.webp'),
     time: '03:00 PM',
     date: '10-12-2026',
     venue: 'Vihari Nivas - Rajamahendravaram',
@@ -62,7 +66,7 @@ const EVENTS = [
     title: "Haldi (Bride's)",
     teluguTitle: "హల్దీ వేడుక (వధువు)",
     subtitle: 'Golden sunshine radiance, marigold petals, joy & laughter',
-    image: '/assets/haldi_bride.webp',
+    image: asset('assets/haldi_bride.webp'),
     time: '03:30 PM',
     date: '10-12-2026',
     venue: 'Avinya Banquet & Suits',
@@ -75,7 +79,7 @@ const EVENTS = [
     title: 'Sangeeth',
     teluguTitle: 'సంగీత్ సంబరం',
     subtitle: 'An enchanting starlit evening of beats, dance, sparkle & harmony',
-    image: '/assets/sangeeth.webp',
+    image: asset('assets/sangeeth.webp'),
     time: '7:00 PM onwards',
     date: '11-12-2026',
     venue: 'Avinya Banquet & Suits',
@@ -88,7 +92,7 @@ const EVENTS = [
     title: 'Mehandi',
     teluguTitle: 'మెహందీ వేడుక',
     subtitle: 'Delicate henna swirls, joyous songs & vibrant festive charm',
-    image: '/assets/mehendi.webp',
+    image: asset('assets/mehendi.webp'),
     time: '5:00 PM onwards',
     date: '11-12-2026',
     venue: 'Avinya Banquet & Suits',
@@ -101,7 +105,7 @@ const EVENTS = [
     title: 'Marriage',
     teluguTitle: 'కళ్యాణ మహోత్సవం',
     subtitle: 'Two hearts, sacred vows, seven pheras & an eternal journey together',
-    image: '/assets/wedding.webp',
+    image: asset('assets/wedding.webp'),
     time: '8:26 PM (Muhurtham)',
     date: '12 December 2026',
     venue: 'SVPC CONVENTIONS',

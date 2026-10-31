@@ -1,12 +1,16 @@
+const BASE = import.meta.env.BASE_URL || './';
+const cleanBase = BASE.endsWith('/') ? BASE : `${BASE}/`;
+const asset = (p) => `${cleanBase}${p.replace(/^\/+/, '')}`;
+
 const GALLERY_IMAGES = [
-  { src: '/assets/gallery/A25I9462.webp', alt: 'PelliKoduku celebration', className: 'item-1' },
-  { src: '/assets/gallery/A25I8942.webp', alt: 'Haldi celebration', className: 'item-2' },
-  { src: '/assets/gallery/A25I9111.webp', alt: 'Mehendi celebration', className: 'item-3' },
-  { src: '/assets/gallery/A25I9163.webp', alt: 'Wedding celebration', className: 'item-4' },
-  { src: '/assets/gallery/A25I9108.webp', alt: 'Wedding moment', className: 'item-5' },
-  { src: '/assets/gallery/A25I8862.webp', alt: 'Wedding moment', className: 'item-6' },
-  { src: '/assets/gallery/A25I8939.webp', alt: 'Wedding moment', className: 'item-7' },
-  { src: '/assets/gallery/A25I8946.webp', alt: 'Wedding moment', className: 'item-8' },
+  { src: asset('assets/gallery/A25I9462.webp'), alt: 'PelliKoduku celebration', className: 'item-1' },
+  { src: asset('assets/gallery/A25I8942.webp'), alt: 'Haldi celebration', className: 'item-2' },
+  { src: asset('assets/gallery/A25I9111.webp'), alt: 'Mehendi celebration', className: 'item-3' },
+  { src: asset('assets/gallery/A25I9163.webp'), alt: 'Wedding celebration', className: 'item-4' },
+  { src: asset('assets/gallery/A25I9108.webp'), alt: 'Wedding moment', className: 'item-5' },
+  { src: asset('assets/gallery/A25I8862.webp'), alt: 'Wedding moment', className: 'item-6' },
+  { src: asset('assets/gallery/A25I8939.webp'), alt: 'Wedding moment', className: 'item-7' },
+  { src: asset('assets/gallery/A25I8946.webp'), alt: 'Wedding moment', className: 'item-8' },
 ];
 
 function Gallery() {
