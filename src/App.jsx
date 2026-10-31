@@ -1,24 +1,11 @@
-import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import FallingFlowers from './components/FallingFlowers';
 import Opening from './components/Opening';
 import useScrollReveal from './hooks/useScrollReveal';
+import useWeddingMusic from './hooks/useWeddingMusic';
 
 const loadMainInvitation = () => import('./components/MainInvitation');
 const MainInvitation = lazy(loadMainInvitation);
-
-const BASE = import.meta.env.BASE_URL || './';
-const cleanBase = BASE.endsWith('/') ? BASE : `${BASE}/`;
-const assetUrl = (p) => `${cleanBase}${p.replace(/^\/+/, '')}`;
-
-const WEDDING_SONGS = [
-  assetUrl('assets/Raarandoi-veduka-choodham.mp3'),
-  assetUrl('assets/Alanati Ramachandrudu.mp3'),
-  assetUrl('assets/kalyanam-vybhogam.mp3'),
-  assetUrl('assets/marriage.mp3'),
-  assetUrl('assets/shararat.mp3'),
-  assetUrl('assets/Shatamanam Bhavati.mp3'),
-  assetUrl('assets/jaya-mangalam.mp3'),
-];
 
 const getStoredTheme = () => {
   try {
@@ -28,20 +15,17 @@ const getStoredTheme = () => {
   }
 };
 
-const getStoredSongIndex = () => {
-  try {
-    return Number(localStorage.getItem('weddingSongIndex') || 0);
-  } catch {
-    return 0;
-  }
-};
-
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(getStoredTheme);
-  const [musicPlaying, setMusicPlaying] = useState(false);
-  const audioRef = useRef(null);
-  const songIndexRef = useRef(getStoredSongIndex());
+
+  const {
+    audioRef,
+    musicPlaying,
+    startMusic,
+    toggleMusic,
+    handleSongEnded,
+  } = useWeddingMusic({ isLandingPage: true });
 
   // On every initial load and page refresh, guarantee landing on the opening envelope screen
   useEffect(() => {
@@ -99,38 +83,6 @@ function App() {
     });
   }, []);
 
-  const startMusic = useCallback(async () => {
-    try {
-      const audio = audioRef.current;
-      if (!audio) return;
-      audio.src = WEDDING_SONGS[songIndexRef.current];
-      audio.volume = 0.7;
-      await audio.play();
-      setMusicPlaying(true);
-      songIndexRef.current = (songIndexRef.current + 1) % WEDDING_SONGS.length;
-      try {
-        localStorage.setItem('weddingSongIndex', songIndexRef.current);
-      } catch {}
-    } catch (error) {
-      setMusicPlaying(false);
-      console.warn('Wedding music is unavailable:', error.message);
-    }
-  }, []);
-
-  const stopMusic = useCallback(() => {
-    const audio = audioRef.current;
-    if (audio) audio.pause();
-    setMusicPlaying(false);
-  }, []);
-
-  const toggleMusic = useCallback(async () => {
-    if (musicPlaying) {
-      stopMusic();
-    } else {
-      await startMusic();
-    }
-  }, [musicPlaying, startMusic, stopMusic]);
-
   const handleOpenEnvelope = useCallback(() => {
     if (isOpen) return;
     startMusic();
@@ -143,7 +95,7 @@ function App() {
   return (
     <>
       <FallingFlowers />
-      <audio ref={audioRef} loop preload="none" />
+      <audio ref={audioRef} onEnded={handleSongEnded} preload="none" />
 
       <Opening isOpen={isOpen} onOpen={handleOpenEnvelope} />
 
