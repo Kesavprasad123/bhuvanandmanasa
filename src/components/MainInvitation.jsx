@@ -1,3 +1,4 @@
+import useScrollReveal from '../hooks/useScrollReveal';
 import MusicToggle from './MusicToggle';
 import FloatingNav from './FloatingNav';
 import Hero from './Hero';
@@ -11,6 +12,8 @@ import FinalSection from './FinalSection';
 import Footer from './Footer';
 
 function MainInvitation({ musicPlaying, onToggleMusic, isDark, onToggleTheme }) {
+  useScrollReveal(true);
+
   return (
     <main id="site">
       <MusicToggle playing={musicPlaying} onToggle={onToggleMusic} />
