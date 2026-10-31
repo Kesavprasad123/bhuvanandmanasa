@@ -9,7 +9,9 @@ import {
 } from '../data/bookingStore';
 import { HostLoginDialog, RoomStatusLight } from './BookingControls';
 import HostDashboard from './HostDashboard';
+import MusicToggle from './MusicToggle';
 import useScrollReveal from '../hooks/useScrollReveal';
+import useWeddingMusic from '../hooks/useWeddingMusic';
 import '../styles/accommodation.css';
 import '../styles/booking.css';
 
@@ -263,6 +265,13 @@ function Accommodation() {
   const [isDark, setIsDark] = useState(getStoredTheme);
   const [selectedId, setSelectedId] = useState(propertyFromHash);
 
+  const {
+    audioRef,
+    musicPlaying,
+    toggleMusic,
+    handleSongEnded,
+  } = useWeddingMusic({ autoStartIfActive: true });
+
   useEffect(() => {
     setHomeHref(getHomeHref());
   }, []);
@@ -270,9 +279,16 @@ function Accommodation() {
   const handleBackToInvitation = useCallback((e) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
+    const audio = audioRef.current;
+    if (audio && !audio.paused) {
+      try {
+        sessionStorage.setItem('weddingMusicActive', 'true');
+        sessionStorage.setItem('weddingSongTime', String(audio.currentTime || 0));
+      } catch {}
+    }
     const target = getHomeHref();
     window.location.assign(target);
-  }, []);
+  }, [audioRef]);
 
   // Live room counts, shared across devices through Supabase.
   const [availability, setAvailability] = useState(null);
@@ -433,6 +449,8 @@ function Accommodation() {
 
   return (
     <div className="acc-page">
+      <audio ref={audioRef} onEnded={handleSongEnded} preload="none" />
+      <MusicToggle playing={musicPlaying} onToggle={toggleMusic} />
       <header className="acc-topbar">
         <a className="acc-home-link" href={homeHref} onClick={handleBackToInvitation}>
           ← Invitation
